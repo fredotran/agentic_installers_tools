@@ -649,6 +649,13 @@ if "servers" in existing_mcp and isinstance(existing_mcp["servers"], dict):
     legacy = existing_mcp.pop("servers")
     for k, v in legacy.items():
         existing_mcp.setdefault(k, v)
+# Normalize any existing server configs: merge command + args into command array
+for name, srv in list(existing_mcp.items()):
+    if isinstance(srv, dict) and "command" in srv:
+        if isinstance(srv["command"], str) and "args" in srv:
+            srv["command"] = [srv["command"]] + list(srv["args"])
+            srv.pop("args", None)
+        srv.pop("description", None)  # not part of schema
 if mcp_servers:
     merged_mcp = existing_mcp.copy()
     merged_mcp.update(mcp_servers)
