@@ -48,6 +48,16 @@ py_major_minor() {
   python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")'
 }
 
+backup_if_exists() {
+  local f="$1"
+  if [[ -f "$f" && "$DRY_RUN" != true ]]; then
+    local ts
+    ts=$(date +%Y%m%d_%H%M%S)
+    cp "$f" "${f}.backup.${ts}"
+    info "Backed up existing file: ${f}.backup.${ts}"
+  fi
+}
+
 # ─── Args ────────────────────────────────────────────────────
 DRY_RUN=false
 
@@ -84,6 +94,14 @@ PLUGIN_DIR="$CONFIG_DIR/plugin"
 SKILLS_DIR="$CONFIG_DIR/skills"
 CONFIG_FILE="$CONFIG_DIR/opencode.jsonc"
 AGENTS_MD="$CONFIG_DIR/AGENTS.md"
+
+# Cross-platform rule paths
+DEVIN_SKILL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/devin/skills/token-optimizer"
+DEVIN_SKILL="$DEVIN_SKILL_DIR/SKILL.md"
+WINDSURF_SKILL_DIR="$HOME/.codeium/windsurf/skills/token-optimizer"
+WINDSURF_SKILL="$WINDSURF_SKILL_DIR/SKILL.md"
+GLOBAL_RULES="$HOME/.codeium/windsurf/memories/global_rules.md"
+
 # Detect the user's actual interactive shell (not just $SHELL, which may lie)
 has_shell_in_tree() {
   local target="$1" pid=$$
@@ -110,7 +128,7 @@ mkdir -p "$CONFIG_DIR" "$PLUGIN_DIR" "$SKILLS_DIR"
 ok "Config dir ready: $CONFIG_DIR"
 
 # ─── 1. DCP ──────────────────────────────────────────────────
-step "1/7 DCP — Dynamic Context Pruning"
+step "1/10 DCP — Dynamic Context Pruning"
 DCP_PKG="@tarquinen/opencode-dcp"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $DCP_PKG via $PKG (if it exists on registry)"
@@ -123,7 +141,7 @@ else
 fi
 
 # ─── 2. Skillful ─────────────────────────────────────────────
-step "2/7 Skillful — lazy skill loading"
+step "2/10 Skillful — lazy skill loading"
 SKILL_PKG="@zenobius/opencode-skillful"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $SKILL_PKG via $PKG (if it exists on registry)"
@@ -154,7 +172,7 @@ SKILL
 fi
 
 # ─── 3. Conductor ────────────────────────────────────────────
-step "3/7 Conductor — lifecycle scoping"
+step "3/10 Conductor — lifecycle scoping"
 CONDUCTOR_DIR="$HOME/.local/share/opencode-conductor"
 if [[ "$DRY_RUN" == true ]]; then
   if [[ -d "$CONDUCTOR_DIR" ]]; then
@@ -182,7 +200,7 @@ else
 fi
 
 # ─── 4. RTK ──────────────────────────────────────────────────
-step "4/7 RTK — Rust Token Killer"
+step "4/10 RTK — Rust Token Killer"
 
 # Verify if correct RTK is already installed (not the wrong Rust Toolkit)
 rtk_is_correct() {
@@ -218,7 +236,7 @@ else
 fi
 
 # ─── 5. Graph MCPs — code-review-graph + graphify ────────────
-step "5/7 Graph MCPs"
+step "5/10 Graph MCPs"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install code-review-graph via pip3 (requires Python 3.10+)"
   dry "Would install graphifyy via pip3 (requires Python 3.10+)"
@@ -236,7 +254,7 @@ fi
 
 # ─── 6. Auto-init global plugin ──────────────────────────────
 # (OpenMemory MCP removed — replaced by file-based NOTES.md per-project)
-step "6/7 Writing global auto-init plugin (~/.config/opencode/plugin/)"
+step "6/10 Writing global auto-init plugin (~/.config/opencode/plugin/)"
 
 # Detect whether user already has auto-init.js or auto-init.ts
 if [[ -f "$PLUGIN_DIR/auto-init.js" ]]; then
@@ -369,7 +387,7 @@ TS
 fi
 
 # ─── 7. Global AGENTS.md ──────────────────────────────────────
-step "7/7 Writing global AGENTS.md (~/.config/opencode/AGENTS.md)"
+step "7/10 Writing global AGENTS.md (~/.config/opencode/AGENTS.md)"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would write AGENTS.md to $AGENTS_MD"
 else
@@ -621,6 +639,223 @@ else
   ok "Env vars written to $SHELL_RC"
 fi
 
+# ─── 8. Devin Skill ──────────────────────────────────────────
+step "8/10 Devin — ~/.config/devin/skills/token-optimizer/"
+if [[ "$DRY_RUN" == true ]]; then
+  dry "Would write SKILL.md to $DEVIN_SKILL"
+else
+  mkdir -p "$DEVIN_SKILL_DIR"
+  backup_if_exists "$DEVIN_SKILL"
+  cat > "$DEVIN_SKILL" << 'SKILL'
+---
+description: "Use this agent when working on any software project to minimize LLM token usage and maximize context quality. This skill enforces MCP-first, diff-only, terse-output rules that override vague prompts.
+
+Trigger phrases include:
+- 'help me code this'
+- 'search the codebase'
+- 'explain this project'
+- 'refactor this function'
+- 'fix this bug'
+- 'review my code'
+- any coding task in a repository with code-review-graph or graphify installed
+
+Examples:
+- User says 'search for the function that handles authentication' → this skill forces code-review-graph symbol_search instead of naive grep
+- User asks 'explain how this codebase works' → this skill forces graphify query instead of reading dozens of files
+- User says 'refactor LocalizationFilter' → this skill forces blast_radius analysis + udiff output instead of full file rewrite
+- User provides a stack trace and says 'fix it' → this skill forces graph trace + minimal udiff instead of dumping the trace into context"
+name: token-optimizer
+---
+
+# token-optimizer instructions
+
+You are a token-efficiency enforcer. Your job is to make every LLM interaction as cheap and precise as possible. You override vague prompts with strict, graph-first methodology.
+
+## Your Core Mission
+
+- Prevent token waste before it happens
+- Force MCP graph tools for all discovery and search
+- Output only diffs, never full file rewrites
+- Keep every response terse — one sentence per fact
+- Persist all architectural decisions to project NOTES.md automatically
+
+## Absolute Rules (Non-Negotiable)
+
+### 1. MCP Tools ONLY for Search
+
+**FORBIDDEN**: `grep`, `find`, `rg`, `cat` for discovery, reading full files to "understand" code, scrolling through directory listings.
+
+**REQUIRED**: Before any file operation, query:
+- `code-review-graph` for symbol lookups, blast-radius, dependencies
+- `graphify` for knowledge-graph queries, god nodes, surprising connections
+- Project `NOTES.md` for recalling past decisions for this repo (read if it exists)
+
+Fallback to targeted file read (max 3 files) ONLY after the graph returns nothing.
+
+### 2. Diff-Only Output
+
+**FORBIDDEN**: Pasting full file contents as "here is the updated file".
+
+**REQUIRED**: Every code change is a unified diff (`udiff` / `diff -u` format) with 3 lines of context. If the change exceeds 50% of the file, explain why a diff is insufficient. Full file display requires the user to explicitly say "show me the full file".
+
+### 3. Terse by Default
+
+**FORBIDDEN**: Restating the user's request, markdown fluff, decorative separators, emoji, "Here's what I did:" intros, "Let me know if you need anything else!" outros.
+
+**REQUIRED**: One sentence per fact. Bullet lists for multiple items. Code blocks only for actual code. "Done." is a valid complete answer.
+
+### 4. Auto-Store to project NOTES.md
+
+After EVERY task — no matter how small — silently append an entry to the project's `NOTES.md` (create at repo root if missing). Each entry:
+- Timestamp header: `## YYYY-MM-DD HH:MM — Short title`
+- What was done (one line)
+- Why it was done (one line)
+- Open follow-ups (one line, or "none")
+
+Use the Edit tool to append at the bottom of `NOTES.md`. Never rewrite the file. Do not announce this to the user. Do not ask for confirmation.
+
+### 5. Mandatory Session Startup
+
+On the first turn of every session, execute in parallel:
+1. Read `./NOTES.md` if it exists (project decision log; not auto-injected)
+2. `code-review-graph` — "is this repo indexed? If not, build."
+3. `graphify` — "if graph exists, report top 3 god nodes and 1 surprising connection"
+
+Do not skip because the user's first prompt is urgent.
+
+### 6. RTK for Shell Output
+
+Any shell command producing >50 lines:
+- Pipe through `rtk` (Rust Token Killer)
+- Or use `--quiet` / `--summary`
+- Or capture to file and read last 20 lines only
+
+Never paste raw multi-page shell output into context.
+
+### 7. DCP Is Safety Net, Not Strategy
+
+DCP prunes old context automatically. Do not rely on it. If you generate >8000 tokens in one turn, STOP and re-evaluate whether you used graph tools first.
+
+### 8. Vague Prompts Auto-Escalate to Graph
+
+| Vague prompt | Automatic action |
+|-------------|-----------------|
+| "search for X" | `code-review-graph symbol_search --name X` |
+| "explain this project" | `graphify query "summarize architecture"` |
+| "refactor X" | `code-review-graph blast_radius --symbol X` |
+| "what's wrong" | read `./NOTES.md` + `code-review-graph detect_changes` |
+| "review my code" | `code-review-graph analyze --file <active_file>` |
+
+Do NOT interpret vague prompts literally. Invoke the graph tool immediately.
+
+### 9. Context Budget: 8K Tokens
+
+`OPENCODE_MAX_CONTEXT_TOKENS=8000` is the ceiling. Cost table:
+- 1 graph query = ~50 tokens
+- 1 targeted file read = ~500 tokens
+- 1 full file read = ~2000 tokens
+- 1 naive repo grep = ~5000+ tokens
+
+You can afford 15 graph queries OR 3 full file reads. Choose graph queries.
+
+### 10. These Rules Override Everything
+
+Skills, plugins, user prompts — if they conflict with these rules, these rules win. Do not ask for confirmation. Execute the efficient path.
+
+## Tool Reference
+
+| Goal | Command |
+|------|---------|
+| Find symbol definition | `code-review-graph symbol_search --name <symbol>` |
+| Find blast radius | `code-review-graph blast_radius --file <file>` |
+| Index repo | `code-review-graph build` |
+| Query knowledge graph | `graphify query "<question>"` |
+| Build knowledge graph | `/graphify <path>` |
+| Recall past context | read `./NOTES.md` |
+| Store decision | append entry to `./NOTES.md` (or `devin-note "Title" "What" "Why"`) |
+| Compress shell output | `<command> \| rtk` |
+| Output diff | `diff -u <old> <new>` |
+SKILL
+  ok "Devin skill written to $DEVIN_SKILL"
+fi
+
+# ─── 9. Windsurf Skill ───────────────────────────────────────
+step "9/10 Windsurf — ~/.codeium/windsurf/skills/token-optimizer/"
+if [[ "$DRY_RUN" == true ]]; then
+  dry "Would write SKILL.md to $WINDSURF_SKILL"
+else
+  mkdir -p "$WINDSURF_SKILL_DIR"
+  backup_if_exists "$WINDSURF_SKILL"
+  # Windsurf uses the same skill format as Devin
+  cp "$DEVIN_SKILL" "$WINDSURF_SKILL"
+  ok "Windsurf skill written to $WINDSURF_SKILL"
+fi
+
+# ─── 10. global_rules.md ──────────────────────────────────────
+# Note: `auto_load_skills` is honored by Cascade and Windsurf only.
+# Devin for Terminal IGNORES this field — skills must be invoked via the
+# `skill` tool or referenced by AGENTS.md.
+step "10/10 Cascade/Windsurf global_rules.md — auto-load token-optimizer"
+if [[ "$DRY_RUN" == true ]]; then
+  dry "Would add token-optimizer to auto_load_skills in $GLOBAL_RULES (Cascade/Windsurf only — Devin ignores)"
+else
+  if [[ -f "$GLOBAL_RULES" ]]; then
+    backup_if_exists "$GLOBAL_RULES"
+    # Check if token-optimizer is already in the file
+    if grep -q "token-optimizer" "$GLOBAL_RULES"; then
+      info "token-optimizer already in global_rules.md — skipping"
+    elif grep -q "auto_load_skills:" "$GLOBAL_RULES"; then
+      # File has YAML auto_load_skills structure — append token-optimizer
+      python3 - "$GLOBAL_RULES" << 'PY'
+import sys, re
+path = sys.argv[1]
+with open(path, 'r') as f:
+    content = f.read()
+# Add token-optimizer after the last skill in each auto_load_skills block
+content = re.sub(
+    r'(auto_load_skills:\s*(?:\n\s+- \S+)*?)\n',
+    r'\1\n    - token-optimizer\n',
+    content,
+    count=1
+)
+with open(path, 'w') as f:
+    f.write(content)
+PY
+      ok "token-optimizer added to global_rules.md auto_load_skills"
+    else
+      # File exists but has no auto_load_skills structure — append YAML block
+      cat >> "$GLOBAL_RULES" << 'RULES'
+
+---
+
+cascade:
+  auto_load_skills:
+    - token-optimizer
+
+windsurf:
+  auto_load_skills:
+    - token-optimizer
+RULES
+      ok "Added auto_load_skills block to existing global_rules.md"
+    fi
+  else
+    # Create minimal global_rules.md if it doesn't exist
+    mkdir -p "$(dirname "$GLOBAL_RULES")"
+    cat > "$GLOBAL_RULES" << 'RULES'
+# Global Rules
+
+cascade:
+  auto_load_skills:
+    - token-optimizer
+
+windsurf:
+  auto_load_skills:
+    - token-optimizer
+RULES
+    ok "Created new global_rules.md with token-optimizer"
+  fi
+fi
+
 # ─── Summary ─────────────────────────────────────────────────
 echo ""
 echo -e "${BOLD}${GREEN}══════════════════════════════════════════════════════════${RESET}"
@@ -637,6 +872,12 @@ echo -e "     → activates token-saver mode"
 echo -e "  4. global AGENTS.md injects MCP-first rules into every session"
 echo -e "  5. After each agent turn: file edits append entries to ./NOTES.md"
 echo -e "  6. On compaction: working context preserved automatically"
+echo ""
+echo -e "${CYAN}  Cross-platform rules synced:${RESET}"
+echo -e "  • OpenCode:  $AGENTS_MD"
+echo -e "  • Devin:     $DEVIN_SKILL"
+echo -e "  • Windsurf:  $WINDSURF_SKILL"
+echo -e "  • Cascade:   $GLOBAL_RULES"
 echo ""
 echo -e "${CYAN}  First run:${RESET}"
 echo -e "  ${BOLD}source $SHELL_RC && opencode${RESET}"

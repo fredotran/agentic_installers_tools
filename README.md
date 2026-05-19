@@ -17,9 +17,9 @@
 
 ## Overview
 
-This folder contains installers and setup scripts for an AI-assisted coding stack built around [OpenCode](https://opencode.ai/). The centerpiece is `setup-token-optimizer.sh`, which installs a collection of plugins, MCP servers, and global rules designed to minimize LLM token usage while maximizing context quality.
+This folder contains installers and setup scripts for an AI-assisted coding stack built around [OpenCode](https://opencode.ai/). The centerpiece is `setup-token-optimizer.sh`, which installs a collection of plugins, MCP servers, and global rules designed to minimize LLM token usage while maximizing context quality — and syncs the same strict rules to **all AI tools** on this system (OpenCode, Devin, Windsurf, Cascade).
 
-There is also a standalone **`setup-global-token-rules.sh`** that pushes the same strict token-saving rules to **all AI tools** on this system — OpenCode, Devin, Windsurf, and Cascade — without requiring the full token-optimizer stack to be installed first.
+The old standalone `setup-global-token-rules.sh` is now a **deprecated wrapper** that delegates to `setup-token-optimizer.sh`.
 
 ---
 
@@ -35,7 +35,7 @@ bash Agentic_Coding_Tools/scripts/setup-token-optimizer.sh
 # Dry-run to preview changes
 bash Agentic_Coding_Tools/scripts/setup-token-optimizer.sh --dry-run
 
-# Or push token-saving rules to ALL AI tools (OpenCode, Devin, Windsurf, Cascade)
+# Or use the deprecated wrapper (delegates to setup-token-optimizer.sh)
 bash Agentic_Coding_Tools/scripts/setup-global-token-rules.sh
 ```
 
@@ -214,8 +214,8 @@ Everything else is handled automatically by the plugin and AGENTS.md.
 | Script | Purpose |
 |--------|---------|
 | `install.sh` | Full installer: opencode CLI, oh-my-openagent, token optimizers, obra/superpowers |
-| `scripts/setup-token-optimizer.sh` | Installs DCP, Skillful, Conductor, RTK, MCP servers, global rules |
-| `scripts/setup-global-token-rules.sh` | Pushes strict token-saving rules to **all** AI tools (OpenCode, Devin, Windsurf, Cascade) |
+| `scripts/setup-token-optimizer.sh` | Installs DCP, Skillful, Conductor, RTK, MCP servers, global rules, and syncs rules to all AI tools |
+| `scripts/setup-global-token-rules.sh` | **Deprecated wrapper** — delegates to `setup-token-optimizer.sh` |
 | `scripts/backup-restore-ai-configs.sh` | Backup and restore AI tool configs across machines |
 | `scripts/run-benchmark.sh` | Benchmarks token usage before/after optimizer stack |
 | `AGENTS.md` (repo root) | Project-specific rules injected every session |
@@ -230,25 +230,25 @@ Everything else is handled automatically by the plugin and AGENTS.md.
 
 ## Global Rules Installer
 
-The standalone **`setup-global-token-rules.sh`** script pushes strict token-saving rules to **every AI tool on your system** — regardless of whether you installed the full token-optimizer stack.
+`setup-token-optimizer.sh` (steps 7–10) pushes strict token-saving rules to **every AI tool on your system** after installing the stack. The old standalone `setup-global-token-rules.sh` is now a **deprecated wrapper** that delegates to `setup-token-optimizer.sh`.
 
 ### What it covers
 
 | Tool | File updated | What happens |
 |------|-------------|--------------|
 | **OpenCode** | `~/.config/opencode/AGENTS.md` | Strict 10-rule AGENTS.md injected every session |
-| **Devin** | `~/.config/devin/skills/token-optimizer/SKILL.md` | Global skill auto-loaded on every Devin session |
-| **Windsurf** | `~/.codeium/windsurf/skills/token-optimizer/SKILL.md` | Global skill auto-loaded on every Windsurf session |
+| **Devin** | `~/.config/devin/skills/token-optimizer/SKILL.md` | Global skill invoked via `skill` tool or AGENTS.md table |
+| **Windsurf** | `~/.codeium/windsurf/skills/token-optimizer/SKILL.md` | Global skill auto-loaded via `auto_load_skills` |
 | **Cascade** | `~/.codeium/windsurf/memories/global_rules.md` | `token-optimizer` added to `auto_load_skills` |
 
 ### Usage
 
 ```bash
 # Preview what it will do
-bash Agentic_Coding_Tools/scripts/setup-global-token-rules.sh --dry-run
+bash Agentic_Coding_Tools/scripts/setup-token-optimizer.sh --dry-run
 
 # Apply for real (backs up existing files automatically)
-bash Agentic_Coding_Tools/scripts/setup-global-token-rules.sh
+bash Agentic_Coding_Tools/scripts/setup-token-optimizer.sh
 ```
 
 ### Key features
@@ -257,6 +257,7 @@ bash Agentic_Coding_Tools/scripts/setup-global-token-rules.sh
 - **Backs up** existing files with timestamps before overwriting
 - **Idempotent** — safe to run multiple times; skips if already present
 - **Dry-run** support for preview
+- **Deprecated wrapper** — `setup-global-token-rules.sh` still works but delegates to `setup-token-optimizer.sh`
 
 ---
 
@@ -349,11 +350,7 @@ export OPENCODE_MAX_CONTEXT_TOKENS=8000
 - **Syncs AGENTS.md** — Full rule set is consistent across all scripts
 - **Package name consistency** — Uses `code-review-graph` (not `better-code-review-graph`)
 - **Adds `graphify` MCP** — Both graph tools are now wired in generated configs
-
-### Global Rules (`setup-global-token-rules.sh`)
-- **Appends to existing AGENTS.md** — Does not overwrite custom rules; appends token-optimizer rules if missing
-- **Handles Windsurf `global_rules.md`** — Properly adds `auto_load_skills` even when the file lacks YAML structure
-- **Copies skill to Windsurf skills dir** — Places `token-optimizer` in `~/.codeium/windsurf/skills/`
+- **Merged global rules** — Now includes Devin skill, Windsurf skill, and `global_rules.md` updates (was in separate `setup-global-token-rules.sh`)
 
 ### Benchmark (`run-benchmark.sh`)
 - **Updated plugin names** — Uses `@tarquinen/opencode-dcp` and `@zenobius/opencode-skillful`
