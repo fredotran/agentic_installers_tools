@@ -168,9 +168,13 @@ plugin = '$plugin_name'
 try:
     with open(path, 'r') as f:
         raw = f.read()
-    clean = re.sub(r'//.*', '', raw)
-    clean = re.sub(r'/\*[\s\S]*?\*/', '', clean)
-    data = json.loads(clean)
+    # Try plain JSON first; if that fails, strip JSONC comments safely
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError:
+        clean = re.sub(r'(?m)^\s*//.*$', '', raw)
+        clean = re.sub(r'/\*[\s\S]*?\*/', '', clean)
+        data = json.loads(clean)
 except Exception as e:
     print(f'Parse error: {e}', file=sys.stderr)
     sys.exit(1)

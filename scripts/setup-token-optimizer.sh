@@ -567,23 +567,51 @@ if [[ "$DRY_RUN" == true ]]; then
   dry "Would write opencode.jsonc to $CONFIG_FILE"
 else
   python3 - "$CONFIG_FILE" "$CONFIG_DIR" "$HOME" << 'PY'
-import json, os, shutil, sys
+import json, os, re, shutil, sys
 
 config_path = sys.argv[1]
 config_dir  = sys.argv[2]
 home        = sys.argv[3]
 
-plugins = []
-instructions = []
+# ── Preserve existing config (opencode.json takes precedence if .jsonc missing) ──
+existing_cfg = {}
+for existing_path in [config_path, config_path.replace(".jsonc", ".json")]:
+    if os.path.isfile(existing_path):
+        try:
+            with open(existing_path, "r") as ef:
+                raw = ef.read()
+            # Try plain JSON first (most files); if that fails, strip JSONC comments
+            try:
+                existing_cfg = json.loads(raw)
+            except json.JSONDecodeError:
+                # Safer comment stripping: only match // preceded by whitespace/start
+                clean = re.sub(r'(?m)^\s*//.*$', '', raw)
+                clean = re.sub(r'/\*[\s\S]*?\*/', '', clean)
+                existing_cfg = json.loads(clean)
+        except Exception:
+            existing_cfg = {}
+        break
+
+plugins = existing_cfg.get("plugin", [])
+if isinstance(plugins, str):
+    plugins = [plugins]
+instructions = existing_cfg.get("instructions", [])
+if isinstance(instructions, str):
+    instructions = [instructions]
 
 # Only reference plugins that were actually installed
 if os.path.isdir(os.path.join(config_dir, "node_modules", "@tarquinen", "opencode-dcp")):
-    plugins.append("@tarquinen/opencode-dcp")
-    instructions.append("node_modules/@tarquinen/opencode-dcp/instructions/dcp.md")
+    if "@tarquinen/opencode-dcp" not in plugins:
+        plugins.append("@tarquinen/opencode-dcp")
+    dcp_instr = "node_modules/@tarquinen/opencode-dcp/instructions/dcp.md"
+    if dcp_instr not in instructions:
+        instructions.append(dcp_instr)
 if os.path.isdir(os.path.join(config_dir, "node_modules", "@zenobius", "opencode-skillful")):
-    plugins.append("@zenobius/opencode-skillful")
+    if "@zenobius/opencode-skillful" not in plugins:
+        plugins.append("@zenobius/opencode-skillful")
 if os.path.isdir(os.path.join(home, ".local", "share", "opencode-conductor")):
-    plugins.append("opencode-conductor")
+    if "opencode-conductor" not in plugins:
+        plugins.append("opencode-conductor")
 
 # Build MCP servers conditionally
 mcp_servers = {}
@@ -606,20 +634,26 @@ if shutil.which("graphify"):
 
 # Note: openmemory MCP server removed — project memory is now file-based via NOTES.md.
 
-cfg = {
-    "$schema": "https://opencode.ai/config.json",
-    "plugin": plugins,
-    "instructions": instructions,
-    "dcp": {
-        "strategy": "smart",
-        "max_tokens": 8000,
-        "keep": ["active_file", "recent_errors"],
-        "drop": ["old_history", "debug_logs"]
-    }
-}
+cfg = existing_cfg.copy()
+cfg["$schema"] = "https://opencode.ai/config.json"
+if plugins:
+    cfg["plugin"] = plugins
+if instructions:
+    cfg["instructions"] = instructions
 
+# Merge DCP settings (don't overwrite existing top-level "dcp" if present)
+cfg["dcp"] = cfg.get("dcp", {})
+cfg["dcp"]["strategy"] = cfg["dcp"].get("strategy", "smart")
+cfg["dcp"]["max_tokens"] = cfg["dcp"].get("max_tokens", 8000)
+cfg["dcp"]["keep"] = cfg["dcp"].get("keep", ["active_file", "recent_errors"])
+cfg["dcp"]["drop"] = cfg["dcp"].get("drop", ["old_history", "debug_logs"])
+
+# Merge MCP servers (preserve existing, add new)
+existing_mcp = cfg.get("mcp", {}).get("servers", {})
 if mcp_servers:
-    cfg["mcp"] = {"servers": mcp_servers}
+    merged_mcp = existing_mcp.copy()
+    merged_mcp.update(mcp_servers)
+    cfg["mcp"] = {"servers": merged_mcp}
 
 with open(config_path, "w") as f:
     json.dump(cfg, f, indent=2)
