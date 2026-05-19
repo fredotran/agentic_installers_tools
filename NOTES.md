@@ -3,3 +3,10 @@
 - Removed the `cfg["dcp"]` write block from `scripts/setup-token-optimizer.sh` and deleted the existing `"dcp"` object from `~/.config/opencode/opencode.jsonc`.
 - OpenCode's config schema no longer recognizes the top-level `"dcp"` key; the `@tarquinen/opencode-dcp` plugin now handles DCP internally.
 - none
+
+## 2026-05-20 01:05 — Fix MCP server schema (add type/enabled keys)
+
+- Added `"type": "local"` and `"enabled": true` to each MCP server entry in `~/.config/opencode/opencode.jsonc`.
+- Updated `scripts/setup-token-optimizer.sh` and `scripts/run-benchmark.sh` to generate MCP servers with the new required fields.
+- OpenCode's config schema now requires `type` ("local" | "remote") and `enabled` (boolean) for every `mcp.servers` entry.
+- none

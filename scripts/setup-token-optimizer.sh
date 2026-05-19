@@ -619,6 +619,8 @@ mcp_servers = {}
 # code-review-graph: tree-sitter symbol search, blast radius (works on Python 3.10+)
 if shutil.which("code-review-graph"):
     mcp_servers["code-review-graph"] = {
+        "type": "local",
+        "enabled": True,
         "command": "code-review-graph",
         "args": ["mcp"],
         "description": "Tree-sitter codebase graph — symbol search, blast radius, dep graph"
@@ -627,6 +629,8 @@ if shutil.which("code-review-graph"):
 # graphify: knowledge graph (works on Python 3.10+)
 if shutil.which("graphify"):
     mcp_servers["graphify"] = {
+        "type": "local",
+        "enabled": True,
         "command": "graphify",
         "args": ["--mcp"],
         "description": "Knowledge graph from code, docs, PDFs, images"

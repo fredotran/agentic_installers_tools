@@ -461,11 +461,15 @@ else
   "mcp": {
     "servers": {
       "code-review-graph": {
+        "type": "local",
+        "enabled": true,
         "command": "code-review-graph",
         "args": ["mcp"],
         "description": "Tree-sitter codebase graph — symbol search, blast radius, dep graph"
       },
       "graphify": {
+        "type": "local",
+        "enabled": true,
         "command": "graphify",
         "args": ["--mcp"],
         "description": "Knowledge graph from code, docs, PDFs, images"
