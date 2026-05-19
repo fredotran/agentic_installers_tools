@@ -17,3 +17,9 @@
 - Merged `command` + `args` into a single `command: [bin, ...args]` array as required by schema.
 - Setup script now migrates legacy `mcp.servers.*` entries into the flat layout.
 - none
+
+## 2026-05-20 01:22 — Normalize legacy MCP configs in setup script
+
+- Added normalization loop to `setup-token-optimizer.sh` that converts existing `command`+`args` into `command` array and strips non-schema `description`.
+- Prevents re-running the script from preserving invalid legacy fields.
+- none
