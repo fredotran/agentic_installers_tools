@@ -8,7 +8,7 @@
 
 - Added `"type": "local"` and `"enabled": true` to each MCP server entry in `~/.config/opencode/opencode.jsonc`.
 - Updated `scripts/setup-token-optimizer.sh` and `scripts/run-benchmark.sh` to generate MCP servers with the new required fields.
-- OpenCode's config schema now requires `type` ("local" | "remote") and `enabled` (boolean) for every `mcp.servers` entry.
+- OpenCode's config schema now requires `type` ("local" | "remote") and `enabled` (boolean) for every `mcp.<name>` entry.
 - none
 
 ## 2026-05-20 01:15 — Flatten mcp config; command must be array
