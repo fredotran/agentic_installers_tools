@@ -459,21 +459,15 @@ else
   ],
   "instructions": ["node_modules/@tarquinen/opencode-dcp/instructions/dcp.md"],
   "mcp": {
-    "servers": {
-      "code-review-graph": {
-        "type": "local",
-        "enabled": true,
-        "command": "code-review-graph",
-        "args": ["mcp"],
-        "description": "Tree-sitter codebase graph — symbol search, blast radius, dep graph"
-      },
-      "graphify": {
-        "type": "local",
-        "enabled": true,
-        "command": "graphify",
-        "args": ["--mcp"],
-        "description": "Knowledge graph from code, docs, PDFs, images"
-      }
+    "code-review-graph": {
+      "type": "local",
+      "enabled": true,
+      "command": ["code-review-graph", "mcp"]
+    },
+    "graphify": {
+      "type": "local",
+      "enabled": true,
+      "command": ["graphify", "--mcp"]
     }
   }
 }

@@ -621,9 +621,7 @@ if shutil.which("code-review-graph"):
     mcp_servers["code-review-graph"] = {
         "type": "local",
         "enabled": True,
-        "command": "code-review-graph",
-        "args": ["mcp"],
-        "description": "Tree-sitter codebase graph — symbol search, blast radius, dep graph"
+        "command": ["code-review-graph", "mcp"]
     }
 
 # graphify: knowledge graph (works on Python 3.10+)
@@ -631,9 +629,7 @@ if shutil.which("graphify"):
     mcp_servers["graphify"] = {
         "type": "local",
         "enabled": True,
-        "command": "graphify",
-        "args": ["--mcp"],
-        "description": "Knowledge graph from code, docs, PDFs, images"
+        "command": ["graphify", "--mcp"]
     }
 
 # Note: openmemory MCP server removed — project memory is now file-based via NOTES.md.
@@ -646,11 +642,19 @@ if instructions:
     cfg["instructions"] = instructions
 
 # Merge MCP servers (preserve existing, add new)
-existing_mcp = cfg.get("mcp", {}).get("servers", {})
+# Schema: mcp is a flat map of <server-name> -> server-config (no nested "servers" key)
+existing_mcp = cfg.get("mcp", {})
+# Migrate legacy nested "servers" wrapper if present
+if "servers" in existing_mcp and isinstance(existing_mcp["servers"], dict):
+    legacy = existing_mcp.pop("servers")
+    for k, v in legacy.items():
+        existing_mcp.setdefault(k, v)
 if mcp_servers:
     merged_mcp = existing_mcp.copy()
     merged_mcp.update(mcp_servers)
-    cfg["mcp"] = {"servers": merged_mcp}
+    cfg["mcp"] = merged_mcp
+elif existing_mcp:
+    cfg["mcp"] = existing_mcp
 
 with open(config_path, "w") as f:
     json.dump(cfg, f, indent=2)

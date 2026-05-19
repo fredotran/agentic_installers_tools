@@ -10,3 +10,10 @@
 - Updated `scripts/setup-token-optimizer.sh` and `scripts/run-benchmark.sh` to generate MCP servers with the new required fields.
 - OpenCode's config schema now requires `type` ("local" | "remote") and `enabled` (boolean) for every `mcp.servers` entry.
 - none
+
+## 2026-05-20 01:15 — Flatten mcp config; command must be array
+
+- Removed the nested `"servers"` wrapper: `mcp` now maps server-name -> config directly (per opencode.ai/docs/mcp-servers).
+- Merged `command` + `args` into a single `command: [bin, ...args]` array as required by schema.
+- Setup script now migrates legacy `mcp.servers.*` entries into the flat layout.
+- none
