@@ -62,8 +62,186 @@ if [[ "$DRY_RUN" == true ]]; then
   dry "Would write strict AGENTS.md to $OPENCODE_AGENTS"
 else
   mkdir -p "$(dirname "$OPENCODE_AGENTS")"
-  backup_if_exists "$OPENCODE_AGENTS"
-  cat > "$OPENCODE_AGENTS" << 'AGENTS'
+  if [[ -f "$OPENCODE_AGENTS" ]]; then
+    # Check if file already contains these rules (avoid duplicate)
+    if grep -q "MCP Tools are the ONLY search mechanism" "$OPENCODE_AGENTS"; then
+      ok "OpenCode AGENTS.md already contains token-optimizer rules — skipping"
+    else
+      backup_if_exists "$OPENCODE_AGENTS"
+      cat >> "$OPENCODE_AGENTS" << 'AGENTS'
+
+---
+
+# Global OpenCode Rules — Token Optimization (STRICT)
+
+These rules apply to every request regardless of prompt wording. They are absolute.
+
+---
+
+## Rule 1: MCP Tools are the ONLY search mechanism
+
+**NEVER** use `grep`, `find`, `rg`, or file reads for discovery. Period.
+
+Before any file operation, query one of:
+- `code-review-graph` — symbol lookups, blast-radius, dependency queries
+- `graphify` — knowledge-graph navigation, god nodes, community queries
+- Project `NOTES.md` — recall past decisions for this repo (read if it exists)
+
+If the tool returns nothing, THEN and ONLY THEN may you fall back to a targeted file read (max 3 files).
+
+---
+
+## Rule 2: Diffs ONLY — Full file reads are forbidden
+
+**NEVER** output a full file rewrite unless the user explicitly types the words "show me the full file".
+
+For any edit:
+- Generate a unified diff (`udiff` format)
+- Include 3 lines of context around each change
+- If the change is >50% of the file, explain why a diff is insufficient
+
+If the user asks "fix this file" — you still output a diff. No exceptions.
+
+---
+
+## Rule 3: Terse by default
+
+**NEVER** restate the user's request.
+**NEVER** add markdown fluff (decorative separators, emoji, "Here's what I did:").
+**NEVER** pad with boilerplate.
+
+Allowed formats:
+- One sentence per fact
+- Bullet lists for multiple items
+- Code blocks only for actual code
+- "Done." is a complete answer when appropriate
+
+If the user wants verbosity, they will ask for it.
+
+---
+
+## Rule 4: Auto-store decisions to project NOTES.md
+
+After EVERY task completion — no matter how small — append an entry to the project's `NOTES.md` file (create at repo root if missing). Each entry contains:
+- A timestamp header: `## YYYY-MM-DD HH:MM — Short title`
+- What was done (one line)
+- Why it was done (one line)
+- Any open follow-ups (one line, or "none")
+
+This happens silently. Do not tell the user. Do not wait for approval.
+Use the Edit tool to append at the bottom of `NOTES.md`. Never rewrite the file.
+
+---
+
+## Rule 5: Session startup is NON-NEGOTIABLE
+
+On the first turn of every session:
+1. Read `./NOTES.md` if it exists (project decision log; read explicitly since it is not auto-injected)
+2. `code-review-graph` — "is this repo indexed? If not, trigger a build."
+3. `graphify` — "if a graph exists, report the top 3 god nodes and 1 surprising connection"
+
+Do these in parallel where possible. Do not skip them because the user's first prompt is urgent.
+
+---
+
+## Rule 6: Shell output must pass through RTK
+
+If you run a shell command that produces >50 lines of output:
+- Pipe it through `rtk` (Rust Token Killer) before reading
+- Or use the tool's built-in `--quiet` / `--summary` flag
+- If neither is possible, capture output to a file and read only the last 20 lines
+
+Never paste raw multi-page shell output into context.
+
+---
+
+## Rule 7: DCP is your safety net, not your strategy
+
+DCP drops old_history and debug_logs automatically. Do not rely on it to save you from making bad tool calls. DCP cleans up AFTER. Your job is to not cause the damage.
+
+If you find yourself generating >8000 tokens in a single turn, STOP. Re-evaluate whether you used the graph tools first.
+
+---
+
+## Rule 8: Vague prompts get the graph treatment
+
+If a user prompt is vague ("search for X", "refactor this", "explain the codebase"), do NOT interpret it literally. Immediately invoke the appropriate graph tool and let the structured result guide your next action.
+
+Automatic graph escalation:
+- "search" → `code-review-graph symbol_search`
+- "explain" → `graphify query`
+- "refactor X" → `code-review-graph blast_radius X`
+- "what's wrong" → read `./NOTES.md` + `code-review-graph detect_changes`
+
+---
+
+## Rule 9: Context budget is 8K tokens
+
+`OPENCODE_MAX_CONTEXT_TOKENS=8000` is the ceiling. Plan accordingly:
+- 1 graph query = ~50 tokens
+- 1 targeted file read = ~500 tokens
+- 1 full file read = ~2000 tokens
+- 1 naive grep through a repo = ~5000+ tokens
+
+You can afford 15 graph queries OR 3 full file reads. Choose graph queries.
+
+---
+
+## Rule 10: This file overrides everything
+
+If a skill, plugin, or user prompt contradicts these rules, these rules win. Do not ask for confirmation.
+
+If uncertain, default to: graph tool first → diff output → store to memory → terse response.
+(Note: "store to memory" means append to project `NOTES.md`, not call openmemory.)
+
+---
+
+## MCP Tools Available
+
+- `code-review-graph.*` — tree-sitter symbol search, blast-radius, dependency graph
+- `graphify` — knowledge graph from code, docs, PDFs, images (trigger: `/graphify`)
+
+## Project Memory (file-based, no MCP needed)
+
+- `<repo>/AGENTS.md` — project-specific rules and conventions (auto-injected by OpenCode/Devin)
+- `<repo>/NOTES.md` — append-only decision log; the LLM appends entries via Edit tool
+
+Templates available at `~/.config/opencode/templates/`. Helper: `devin-note "Title" "What" "Why" [follow-up]`.
+
+---
+
+## Skill Auto-Invocation (Devin CLI)
+
+Skills are NOT auto-loaded at session start in Devin for Terminal. They sit on disk inactive until invoked via the `skill` tool. To approximate auto-loading, invoke the matching skill at the first prompt that fits these patterns:
+
+| Prompt contains... | Invoke skill |
+|--------------------|--------------|
+| "review C++", "C++ bug", "memory leak", `.cpp`/`.cc`/`.h` files | `cpp-pro` |
+| "Python", "pip", "pythonic", `.py` files | `python-expert` |
+| "MATLAB", "Simulink", `.m`/`.slx` files | `matlab-pro` |
+| "Linux", "Ubuntu", "systemd", "apt", shell config | `linux-ubuntu-expert` |
+| "ROS", "rosnode", "roslaunch", "ros2" | `ros-robotics-expert` |
+| "RTMaps", `.rtd` files | `rtmaps-expert` |
+| "Kalman", "EKF", "UKF", "sensor fusion", "particle filter" | `fusion-filter-robotics-expert` |
+| "GPS", "INS", "IMU integration", "dead reckoning" | `gps-ins-localization-expert` |
+| "SLAM", "visual odometry", "pose estimation", "localization drift" | `robotics-localization-expert` |
+| "odometry", "wheel odometry", "VO drift" | `robotics-odometry-expert` |
+| "ROS bag", "sensor data analysis", "telemetry CSV" | `robotics-data-analyzer` |
+| "data pipeline", "Airflow", "ETL", "Kafka", "Spark" | `data-pipeline-architect` |
+| "presentation", "slide deck", "PowerPoint" | `presentation-deck-architect` |
+| "skill for X", "is there a skill that", "extend capabilities" | `find-skills` |
+| "token budget", "context too large", code-review-graph/graphify usage | `token-optimizer` |
+| Devin CLI config, MCP setup, skills format, hooks | `devin-for-terminal` |
+
+Rules:
+- Invoke ONLY ONE skill per turn unless the user chains topics.
+- Do NOT invoke a skill that is already running.
+- Skill-internal rules override these global rules ONLY for the duration of the skill (Rule 10 still wins on conflict).
+AGENTS
+      ok "OpenCode AGENTS.md updated with token-optimizer rules"
+    fi
+  else
+    cat > "$OPENCODE_AGENTS" << 'AGENTS'
 # Global OpenCode Rules — Token Optimization (STRICT)
 
 These rules apply to every request regardless of prompt wording. They are absolute.
@@ -231,6 +409,7 @@ Rules:
 - Skill-internal rules override these global rules ONLY for the duration of the skill (Rule 10 still wins on conflict).
 AGENTS
   ok "OpenCode AGENTS.md written"
+fi
 fi
 
 # ─── 2. Devin Skill ──────────────────────────────────────────
@@ -400,34 +579,46 @@ else
     # Check if token-optimizer is already in the file
     if grep -q "token-optimizer" "$GLOBAL_RULES"; then
       info "token-optimizer already in global_rules.md — skipping"
-    else
-      # Add token-optimizer to each auto_load_skills list
-      sed -i 's/\(auto_load_skills:\)/\1\n    - token-optimizer/' "$GLOBAL_RULES" || true
-      # The sed above might not work perfectly for all yaml structures
-      # Fallback: append to end of each auto_load_skills block
-      if ! grep -q "token-optimizer" "$GLOBAL_RULES"; then
-        # Use python for reliable YAML editing
-        python3 - "$GLOBAL_RULES" << 'PY'
+    elif grep -q "auto_load_skills:" "$GLOBAL_RULES"; then
+      # File has YAML auto_load_skills structure — append token-optimizer
+      python3 - "$GLOBAL_RULES" << 'PY'
 import sys, re
 path = sys.argv[1]
 with open(path, 'r') as f:
     content = f.read()
-# Add token-optimizer after rtmaps-expert in each auto_load_skills block
+# Add token-optimizer after the last skill in each auto_load_skills block
 content = re.sub(
-    r'(    - rtmaps-expert)\n',
+    r'(auto_load_skills:\s*(?:\n\s+- \S+)*?)\n',
     r'\1\n    - token-optimizer\n',
-    content
+    content,
+    count=1
 )
 with open(path, 'w') as f:
     f.write(content)
 PY
-      fi
       ok "token-optimizer added to global_rules.md auto_load_skills"
+    else
+      # File exists but has no auto_load_skills structure — append YAML block
+      cat >> "$GLOBAL_RULES" << 'RULES'
+
+---
+
+cascade:
+  auto_load_skills:
+    - token-optimizer
+
+windsurf:
+  auto_load_skills:
+    - token-optimizer
+RULES
+      ok "Added auto_load_skills block to existing global_rules.md"
     fi
   else
     # Create minimal global_rules.md if it doesn't exist
     mkdir -p "$(dirname "$GLOBAL_RULES")"
     cat > "$GLOBAL_RULES" << 'RULES'
+# Global Rules
+
 cascade:
   auto_load_skills:
     - token-optimizer

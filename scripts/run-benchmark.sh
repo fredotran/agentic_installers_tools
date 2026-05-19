@@ -368,11 +368,13 @@ else
   fi
 fi
 
-# ── 5. code-review-graph MCP ───
+# ── 5. Graph MCPs — code-review-graph + graphify ───
 if [[ "$DRY_RUN" -eq 1 ]]; then
-  info "[dry-run] Would install better-code-review-graph via pip3"
+  info "[dry-run] Would install code-review-graph via pip3"
+  info "[dry-run] Would install graphifyy via pip3"
 else
-  pip3 install better-code-review-graph -q 2>/dev/null && ok "code-review-graph installed" || warn "code-review-graph failed"
+  pip3 install code-review-graph -q 2>/dev/null && ok "code-review-graph installed" || warn "code-review-graph install failed"
+  pip3 install graphifyy -q 2>/dev/null && ok "graphifyy installed" || warn "graphifyy install failed"
 fi
 
 # ── 6. auto-init plugin ───
@@ -449,24 +451,24 @@ else
 {
   "$schema": "https://opencode.ai/config.json",
   "plugin": [
-    "dcp-plugin",
-    "opencode-skillful",
+    "@tarquinen/opencode-dcp",
+    "@zenobius/opencode-skillful",
     "opencode-conductor",
     "opencode-tokenscope",
     "opencode-token-monitor"
   ],
-  "instructions": ["node_modules/opencode-dcp-plugin/instructions/dcp.md"],
-  "dcp": {
-    "strategy": "smart",
-    "max_tokens": 8000,
-    "keep": ["active_file", "recent_errors"],
-    "drop": ["old_history", "debug_logs"]
-  },
+  "instructions": ["node_modules/@tarquinen/opencode-dcp/instructions/dcp.md"],
   "mcp": {
     "servers": {
-      "better-code-review-graph": {
-        "command": "uvx",
-        "args": ["--python", "3.13", "better-code-review-graph"]
+      "code-review-graph": {
+        "command": "code-review-graph",
+        "args": ["mcp"],
+        "description": "Tree-sitter codebase graph — symbol search, blast radius, dep graph"
+      },
+      "graphify": {
+        "command": "graphify",
+        "args": ["--mcp"],
+        "description": "Knowledge graph from code, docs, PDFs, images"
       }
     }
   }

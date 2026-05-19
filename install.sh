@@ -145,7 +145,7 @@ merge_opencode_plugin() {
   local plugin_name="oh-my-openagent@latest"
 
   if [[ "$DRY_RUN" == true ]]; then
-    if grep -q '"oh-my-openagent' "$config_file" 2>/dev/null; then
+    if grep -q '"oh-my-openagent' "$config_file" 2>/dev/null || grep -q 'oh-my-opendevin' "$config_file" 2>/dev/null; then
       dry "Plugin already present in $(basename "$config_file")"
     else
       dry "Would add '$plugin_name' to $(basename "$config_file")"
@@ -153,12 +153,12 @@ merge_opencode_plugin() {
     return 0
   fi
 
-  if grep -q '"oh-my-openagent' "$config_file" 2>/dev/null; then
+  if grep -q '"oh-my-openagent' "$config_file" 2>/dev/null || grep -q 'oh-my-opendevin' "$config_file" 2>/dev/null; then
     ok "Plugin already present in $(basename "$config_file")"
     return 0
   fi
 
-  # Use Python to safely merge into JSON/JSONC
+  # Use Python to safely merge into JSON/JSONC, preserving local file:// plugins
   local result
   result=$(python3 -c "
 import json, re, sys
@@ -178,7 +178,9 @@ except Exception as e:
 plugins = data.get('plugin', [])
 if isinstance(plugins, str):
     plugins = [plugins]
-if plugin not in plugins:
+# Check for any oh-my-openagent or oh-my-opendevin variant
+has_oma = any('oh-my-openagent' in p or 'oh-my-opendevin' in p for p in plugins)
+if not has_oma and plugin not in plugins:
     plugins.insert(0, plugin)
     data['plugin'] = plugins
     with open(path, 'w') as f:
@@ -192,7 +194,7 @@ else:
     result="merged-fallback"
   }
 
-  if [[ "$result" == "merged" ]]; then
+  if [[ "$result" == "merged" ]] || [[ "$result" == "merged-fallback" ]]; then
     ok "Plugin entry added to $(basename "$config_file")"
   else
     ok "Plugin already present in $(basename "$config_file")"
@@ -377,15 +379,15 @@ else
   if [[ "$INSTALL_OMA" == true ]]; then
     # Install package
     if [[ "$DRY_RUN" == true ]]; then
-      dry "Would install oh-my-opencode@latest via $PKG_MGR"
+      dry "Would install oh-my-openagent@latest via $PKG_MGR"
     else
       info "Installing oh-my-openagent plugin package…"
       if [[ "$PKG_MGR" == "bun" ]]; then
-        bun i -g oh-my-opencode@latest 2>/dev/null && ok "oh-my-opencode installed" || warn "global install failed (plugin may resolve via opencode)"
+        bun i -g oh-my-openagent@latest 2>/dev/null && ok "oh-my-openagent installed" || warn "global install failed (plugin may resolve via opencode)"
       else
-        npm install -g oh-my-opencode@latest 2>/dev/null && ok "oh-my-opencode installed" || warn "global install failed (plugin may resolve via opencode)"
+        npm install -g oh-my-openagent@latest 2>/dev/null && ok "oh-my-openagent installed" || warn "global install failed (plugin may resolve via opencode)"
       fi
-      changed "oh-my-opencode package"
+      changed "oh-my-openagent package"
     fi
 
     # Resolve active opencode config file (.jsonc takes precedence)
@@ -419,12 +421,20 @@ JSON
       fi
     fi
 
-    # Write oh-my-openagent.json
+    # Write oh-my-openagent.json — PRESERVE existing rich configs
     if [[ -f "$OMA_CONFIG" ]]; then
-      backup_config "$OMA_CONFIG"
+      if [[ "$FORCE" != true ]]; then
+        ok "oh-my-openagent.json already exists — preserving existing config"
+        ok "Use --force to overwrite with the template"
+        skipped "oh-my-openagent.json (preserved existing)"
+      else
+        backup_config "$OMA_CONFIG"
+      fi
     fi
 
-    if [[ "$DRY_RUN" == true ]]; then
+    if [[ -f "$OMA_CONFIG" && "$FORCE" != true ]]; then
+      : # Preserved above
+    elif [[ "$DRY_RUN" == true ]]; then
       dry "Would write oh-my-openagent.json"
     else
       cat > "$OMA_CONFIG" << 'OMA'
@@ -438,53 +448,92 @@ JSON
   },
   "agents": {
     "sisyphus": {
-      "model": "anthropic/claude-opus-4-7",
-      "variant": "max",
-      "fallback_models": [
-        { "model": "github-copilot/claude-opus-4.6", "variant": "max" },
-        { "model": "github-copilot/gpt-5.4", "variant": "medium" }
-      ]
+      "model": "github-copilot/claude-opus-4.6",
+      "variant": "high",
+      "ultrawork": {
+        "model": "github-copilot/claude-opus-4.6",
+        "variant": "high"
+      }
     },
     "hephaestus": {
-      "model": "github-copilot/gpt-5.3-codex",
+      "model": "github-copilot/gpt-5.4",
       "variant": "medium"
     },
     "oracle": {
       "model": "github-copilot/gpt-5.4",
-      "variant": "high",
-      "fallback_models": [
-        { "model": "github-copilot/gemini-3.1-pro-preview", "variant": "high" },
-        { "model": "anthropic/claude-opus-4-6", "variant": "max" },
-        { "model": "github-copilot/claude-opus-4.6", "variant": "max" }
-      ]
+      "variant": "high"
+    },
+    "librarian": {
+      "model": "github-copilot/gpt-4.1"
     },
     "explore": {
-      "model": "anthropic/claude-haiku-4-5"
+      "model": "github-copilot/gpt-4.1"
+    },
+    "multimodal-looker": {
+      "model": "github-copilot/gpt-4.1",
+      "fallback_models": [
+        { "model": "github-copilot/claude-haiku-4.5" }
+      ]
+    },
+    "prometheus": {
+      "model": "github-copilot/claude-opus-4.6",
+      "variant": "high"
+    },
+    "metis": {
+      "model": "github-copilot/claude-sonnet-4.6",
+      "variant": "high"
+    },
+    "momus": {
+      "model": "github-copilot/gpt-5.4",
+      "variant": "xhigh"
     },
     "atlas": {
-      "model": "anthropic/claude-sonnet-4-6",
-      "fallback_models": [
-        { "model": "github-copilot/claude-sonnet-4-6" },
-        { "model": "github-copilot/gpt-5.5", "variant": "medium" }
-      ]
+      "model": "github-copilot/claude-sonnet-4.6"
+    },
+    "sisyphus-junior": {
+      "model": "github-copilot/claude-sonnet-4.6"
     }
   },
   "categories": {
+    "visual-engineering": {
+      "model": "github-copilot/claude-sonnet-4.6"
+    },
+    "ultrabrain": {
+      "model": "github-copilot/gpt-5.4",
+      "variant": "xhigh"
+    },
     "deep": {
-      "model": "github-copilot/gpt-5.5",
-      "variant": "medium",
-      "fallback_models": [
-        { "model": "anthropic/claude-opus-4-6", "variant": "max" },
-        { "model": "github-copilot/claude-opus-4-6", "variant": "max" }
-      ]
+      "model": "github-copilot/gpt-5.4",
+      "variant": "medium"
+    },
+    "artistry": {
+      "model": "github-copilot/claude-sonnet-4.6"
     },
     "quick": {
-      "model": "github-copilot/gpt-5.4-mini",
+      "model": "github-copilot/gpt-4.1",
       "fallback_models": [
-        { "model": "anthropic/claude-haiku-4-5" },
         { "model": "github-copilot/claude-haiku-4.5" }
       ]
+    },
+    "unspecified-low": {
+      "model": "github-copilot/claude-sonnet-4.6"
+    },
+    "unspecified-high": {
+      "model": "github-copilot/claude-opus-4.6",
+      "variant": "medium",
+      "fallback_models": [
+        { "model": "github-copilot/gpt-5.4", "variant": "medium" }
+      ]
+    },
+    "writing": {
+      "model": "github-copilot/claude-sonnet-4.6"
     }
+  },
+  "team_mode": {
+    "enabled": true,
+    "max_parallel_members": 4,
+    "max_members": 8,
+    "tmux_visualization": false
   }
 }
 OMA

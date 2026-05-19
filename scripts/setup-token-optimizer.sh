@@ -10,7 +10,7 @@
 #    2. opencode-skillful         (lazy skill loading)
 #    3. opencode-conductor        (lifecycle scoping)
 #    4. RTK                       (CLI output compression)
-#    5. better-code-review-graph  (tree-sitter search MCP)
+#    5. code-review-graph  (tree-sitter search MCP)
 #    6. auto-init.ts              (global plugin: wires everything on session.created)
 #    7. global AGENTS.md          (global rules injected every session)
 #       (Project memory is file-based — append decisions to ./NOTES.md per project)
@@ -236,11 +236,31 @@ fi
 
 # ─── 6. Auto-init global plugin ──────────────────────────────
 # (OpenMemory MCP removed — replaced by file-based NOTES.md per-project)
-step "6/7 Writing global auto-init plugin (~/.config/opencode/plugin/auto-init.ts)"
-if [[ "$DRY_RUN" == true ]]; then
-  dry "Would write auto-init.ts to $PLUGIN_DIR/auto-init.ts"
+step "6/7 Writing global auto-init plugin (~/.config/opencode/plugin/)"
+
+# Detect whether user already has auto-init.js or auto-init.ts
+if [[ -f "$PLUGIN_DIR/auto-init.js" ]]; then
+  AUTOINIT_FILE="$PLUGIN_DIR/auto-init.js"
+  AUTOINIT_EXT="js"
+elif [[ -f "$PLUGIN_DIR/auto-init.ts" ]]; then
+  AUTOINIT_FILE="$PLUGIN_DIR/auto-init.ts"
+  AUTOINIT_EXT="ts"
 else
-  cat > "$PLUGIN_DIR/auto-init.ts" << 'TS'
+  # Default to .ts unless opencode.json references .js plugins
+  AUTOINIT_FILE="$PLUGIN_DIR/auto-init.ts"
+  AUTOINIT_EXT="ts"
+  if [[ -f "$CONFIG_DIR/opencode.json" ]] && grep -q '\.js' "$CONFIG_DIR/opencode.json"; then
+    AUTOINIT_FILE="$PLUGIN_DIR/auto-init.js"
+    AUTOINIT_EXT="js"
+  fi
+fi
+
+if [[ "$DRY_RUN" == true ]]; then
+  dry "Would write auto-init.$AUTOINIT_EXT to $AUTOINIT_FILE"
+elif [[ -f "$AUTOINIT_FILE" ]]; then
+  ok "auto-init.$AUTOINIT_EXT already exists — preserving existing plugin"
+else
+  cat > "$AUTOINIT_FILE" << 'TS'
 /**
  * auto-init.ts — Global OpenCode plugin
  * Fires on every session.created event and:
@@ -610,7 +630,7 @@ echo ""
 echo -e "${CYAN}  What happens automatically on every session start:${RESET}"
 echo -e "  1. DCP silently prunes context before every LLM call"
 echo -e "  2. RTK wraps every shell command output"
-echo -e "  3. auto-init.ts plugin fires on session.created:"
+echo -e "  3. auto-init.$AUTOINIT_EXT plugin fires on session.created:"
 echo -e "     → reads ./NOTES.md (project decision log) if present"
 echo -e "     → builds code-review-graph if not yet indexed"
 echo -e "     → activates token-saver mode"

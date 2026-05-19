@@ -19,14 +19,15 @@ This document summarizes every customization applied to OpenCode compared to a f
 
 ---
 
-## 2. MCP Servers (2 configured)
+## 2. MCP Servers (3 configured)
 
 | Server | Type | Command | Status |
 |--------|------|---------|--------|
 | `code-review-graph` | local | `code-review-graph mcp` | enabled |
+| `graphify` | local | `graphify --mcp` | enabled |
 | `openmemory` | local | `python3 -m openmemory.mcp.server` | **disabled** |
 
-`graphify` MCP was removed — the `graphify` CLI is installed (`v0.8.13`) but no longer wired as an MCP server in this config.
+`graphify` MCP is now enabled alongside `code-review-graph` — both graph tools are wired in generated configs.
 
 **File:** `~/.config/opencode/opencode.jsonc`
 
@@ -158,9 +159,8 @@ On `session.idle`:
 
 | What | Reason |
 |------|--------|
-| `graphify` MCP server | Removed from `mcp` block; CLI still installed but not wired |
-| `openmemory` MCP | **Disabled** (`"enabled": false`) in `opencode.jsonc` |
-| Top-level `"dcp"` key | Caused config validation error — removed, plugin handles DCP |
+| `openmemory` MCP | **Disabled** (`"enabled": false`) in `opencode.jsonc` — replaced by file-based `NOTES.md` |
+| Top-level `"dcp"` key | Optional — plugin handles DCP internally in newer versions |
 | `"mcp.servers"` array format | Schema requires object map with `"type"`/`"enabled"` per entry |
 
 ---

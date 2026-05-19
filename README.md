@@ -336,6 +336,34 @@ export OPENCODE_MAX_CONTEXT_TOKENS=8000
 
 ---
 
+## Changes Since Initial Release
+
+### Installer (`install.sh`)
+- **Preserves existing `oh-my-openagent.json`** — Will not overwrite your rich agent/category config unless `--force` is passed
+- **Handles local plugins** — Detects existing `file:///.../oh-my-opendevin` plugins and does not add conflicting npm references
+- **Fixed package name** — `oh-my-openagent@latest` (was `oh-my-opencode`)
+- **Updated template** — Matches your current agent routing (sisyphus, hephaestus, oracle, librarian, explore, multimodal-looker, prometheus, metis, momus, atlas, sisyphus-junior)
+
+### Token Optimizer (`setup-token-optimizer.sh`)
+- **Respects existing plugins** — Detects whether you have `auto-init.js` or `auto-init.ts` and preserves existing files
+- **Syncs AGENTS.md** — Full rule set is consistent across all scripts
+- **Package name consistency** — Uses `code-review-graph` (not `better-code-review-graph`)
+- **Adds `graphify` MCP** — Both graph tools are now wired in generated configs
+
+### Global Rules (`setup-global-token-rules.sh`)
+- **Appends to existing AGENTS.md** — Does not overwrite custom rules; appends token-optimizer rules if missing
+- **Handles Windsurf `global_rules.md`** — Properly adds `auto_load_skills` even when the file lacks YAML structure
+- **Copies skill to Windsurf skills dir** — Places `token-optimizer` in `~/.codeium/windsurf/skills/`
+
+### Benchmark (`run-benchmark.sh`)
+- **Updated plugin names** — Uses `@tarquinen/opencode-dcp` and `@zenobius/opencode-skillful`
+- **Added `graphify` MCP** — Both graph tools benchmarked together
+- **Removed hardcoded Python 3.13** — Uses system Python for `code-review-graph`
+
+### Backup & Restore (`backup-restore-ai-configs.sh`)
+- **More complete coverage** — Backs up `.mcp.json`, `settings.json`, `config.json`, `.gitignore`, `model_list`, and the `oh-my-opendevin` local plugin
+- **Handles `ohmyopendevin`** — New backup category for your local plugin fork
+
 ## Troubleshooting
 
 | Issue | Fix |

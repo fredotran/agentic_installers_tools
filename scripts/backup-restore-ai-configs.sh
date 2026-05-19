@@ -106,11 +106,14 @@ CONFIG_FILES[codeium]="$HOME/.codeium/memories/global_rules.md"
 
 # Devin
 CONFIG_DIRS[devin]="$HOME/.config/devin/skills $HOME/.config/devin/cli"
-CONFIG_FILES[devin]="$HOME/.config/devin/config.json $HOME/.devin/config.local.json"
+CONFIG_FILES[devin]="$HOME/.config/devin/config.json $HOME/.devin/config.local.json $HOME/.config/devin/model_list"
 
 # OpenCode
-CONFIG_DIRS[opencode]="$HOME/.config/opencode/plugin $HOME/.config/opencode/skills $HOME/.config/opencode/templates $HOME/.config/opencode/commands $HOME/.config/opencode/agent $HOME/.config/opencode/command"
-CONFIG_FILES[opencode]="$HOME/.config/opencode/AGENTS.md $HOME/.config/opencode/opencode.jsonc $HOME/.config/opencode/opencode.json $HOME/.config/opencode/oh-my-openagent.json $HOME/.config/opencode/dcp.jsonc $HOME/.config/opencode/package.json $HOME/.config/opencode/package-lock.json"
+CONFIG_DIRS[opencode]="$HOME/.config/opencode/plugin $HOME/.config/opencode/skills $HOME/.config/opencode/templates $HOME/.config/opencode/commands $HOME/.config/opencode/agent $HOME/.config/opencode/command $HOME/.config/opencode/node_modules $HOME/.config/opencode/plugins $HOME/.config/opencode/plugin-data $HOME/.config/opencode/installed-plugins"
+CONFIG_FILES[opencode]="$HOME/.config/opencode/AGENTS.md $HOME/.config/opencode/opencode.jsonc $HOME/.config/opencode/opencode.json $HOME/.config/opencode/oh-my-openagent.json $HOME/.config/opencode/dcp.jsonc $HOME/.config/opencode/package.json $HOME/.config/opencode/package-lock.json $HOME/.config/opencode/.mcp.json $HOME/.config/opencode/config.json $HOME/.config/opencode/settings.json $HOME/.config/opencode/.gitignore"
+
+# Oh My OpenAgent / OpenDevin (local plugin path may be referenced in opencode.json)
+CONFIG_DIRS[ohmyopendevin]="$HOME/Code/oh-my-opendevin"
 
 # Oh My OpenAgent (same file as opencode oh-my-openagent.json)
 # intentionally merged into opencode above
@@ -230,7 +233,7 @@ Tools backed up:
 EOF
   fi
 
-  for tool in windsurf codeium devin opencode copilot helpers; do
+  for tool in windsurf codeium devin opencode ohmyopendevin copilot helpers; do
     count=$(count_items "$tool")
     if [[ "$count" -eq 0 ]]; then
       warn "$tool: no configs found — skipping"
@@ -323,7 +326,7 @@ if [[ "$ACTION" == "restore" ]]; then
     info "Backup contents:"
   fi
 
-  for tool in windsurf codeium devin opencode copilot helpers; do
+  for tool in windsurf codeium devin opencode ohmyopendevin copilot helpers; do
     tool_dir="$RESTORE_ROOT/$tool"
     if [[ -d "$tool_dir" ]]; then
       n=$(find "$tool_dir" -type f | wc -l)
@@ -356,7 +359,7 @@ if [[ "$ACTION" == "restore" ]]; then
 
   step "Restore — applying"
 
-  for tool in windsurf codeium devin opencode copilot helpers; do
+  for tool in windsurf codeium devin opencode ohmyopendevin copilot helpers; do
     tool_dir="$RESTORE_ROOT/$tool"
     if [[ ! -d "$tool_dir" ]]; then
       continue
