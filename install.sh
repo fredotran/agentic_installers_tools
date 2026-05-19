@@ -318,32 +318,32 @@ else
 fi
 
 if [[ "$CONFIGURE" == true ]]; then
-  info "Supported providers: openai, anthropic, google, github-copilot, xai"
-  info "(You can add multiple — leave blank when done)"
-  echo ""
+  if [[ "$DRY_RUN" == true ]]; then
+    dry "Would re-configure auth.json with API key prompts"
+  else
+    info "Supported providers: openai, anthropic, google, github-copilot, xai"
+    info "(You can add multiple — leave blank when done)"
+    echo ""
 
-  declare -a ENTRIES=()
-  while true; do
-    read -rp "  Provider name (or Enter to finish): " provider
-    [[ -z "$provider" ]] && break
+    declare -a ENTRIES=()
+    while true; do
+      read -rp "  Provider name (or Enter to finish): " provider
+      [[ -z "$provider" ]] && break
 
-    read -rp "  API key for $provider: " key
-    [[ -z "$key" ]] && { warn "Empty key, skipping."; continue; }
+      read -rp "  API key for $provider: " key
+      [[ -z "$key" ]] && { warn "Empty key, skipping."; continue; }
 
-    ENTRIES+=("$provider|$key")
-  done
+      ENTRIES+=("$provider|$key")
+    done
 
-  if [[ ${#ENTRIES[@]} -gt 0 ]]; then
-    if [[ "$DRY_RUN" == true ]]; then
-      dry "Would write auth.json with ${#ENTRIES[@]} provider(s)"
-    else
+    if [[ ${#ENTRIES[@]} -gt 0 ]]; then
       build_auth_json "$AUTH_FILE" "${ENTRIES[@]}"
       validate_json "$AUTH_FILE"
       ok "auth.json written with ${#ENTRIES[@]} provider(s)"
       changed "auth.json configured"
+    else
+      warn "No API keys configured. You can run 'opencode auth' later."
     fi
-  else
-    warn "No API keys configured. You can run 'opencode auth' later."
   fi
 else
   skipped "auth.json (kept existing)"
