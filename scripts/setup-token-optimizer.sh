@@ -641,13 +641,6 @@ if plugins:
 if instructions:
     cfg["instructions"] = instructions
 
-# Merge DCP settings (don't overwrite existing top-level "dcp" if present)
-cfg["dcp"] = cfg.get("dcp", {})
-cfg["dcp"]["strategy"] = cfg["dcp"].get("strategy", "smart")
-cfg["dcp"]["max_tokens"] = cfg["dcp"].get("max_tokens", 8000)
-cfg["dcp"]["keep"] = cfg["dcp"].get("keep", ["active_file", "recent_errors"])
-cfg["dcp"]["drop"] = cfg["dcp"].get("drop", ["old_history", "debug_logs"])
-
 # Merge MCP servers (preserve existing, add new)
 existing_mcp = cfg.get("mcp", {}).get("servers", {})
 if mcp_servers:

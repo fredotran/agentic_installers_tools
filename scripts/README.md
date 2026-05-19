@@ -160,7 +160,7 @@ On `session.idle`:
 | What | Reason |
 |------|--------|
 | `openmemory` MCP | **Disabled** (`"enabled": false`) in `opencode.jsonc` — replaced by file-based `NOTES.md` |
-| Top-level `"dcp"` key | Optional — plugin handles DCP internally in newer versions |
+| Top-level `"dcp"` key | **Removed** — causes schema validation errors; plugin handles DCP internally |
 | `"mcp.servers"` array format | Schema requires object map with `"type"`/`"enabled"` per entry |
 
 ---

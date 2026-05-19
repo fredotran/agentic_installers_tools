@@ -308,7 +308,7 @@ After running the setup script, your OpenCode configuration lives in:
 
 ```
 ~/.config/opencode/
-├── opencode.jsonc          # Plugin list, MCP servers, DCP config
+├── opencode.jsonc          # Plugin list, MCP servers, instructions
 ├── AGENTS.md               # Global rules (injected every session)
 ├── skills/
 │   └── token-saver.md      # Token-saver skill definition
