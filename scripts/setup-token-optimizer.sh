@@ -5,16 +5,20 @@
 #
 #  Everything auto-runs on session start — no manual triggers.
 #
-#  Components:
-#    1. opencode-dynamic-context-pruning (DCP)
+#  Components (Stack B = default, Stack A via --stack-a):
+#    1. opencode-dynamic-context-pruning (DCP)         -- live context pruning
 #    2. opencode-skillful         (lazy skill loading)
 #    3. opencode-conductor        (lifecycle scoping)
-#    4. opencode-lcm              (lossless context memory)
-#    5. RTK                       (CLI output compression)
-#    6. code-review-graph  (tree-sitter search MCP)
-#    7. auto-init.ts              (global plugin: wires everything on session.created)
-#    8. global AGENTS.md          (global rules injected every session)
-#       (Project memory is file-based — append decisions to ./NOTES.md per project)
+#    4. opencode-lcm              (lossless in-session memory)
+#    5. context-mode              (sandbox tool/MCP/DOM output, up to 98%)  [NEW]
+#    6. RTK                       (CLI output compression)
+#    7. code-review-graph         (tree-sitter symbol/dependency MCP)
+#    8. graphify (CLI)            (knowledge-graph queries)
+#    9. token-savior              (symbol-level codebase navigation MCP)    [NEW]
+#   10. memsearch (Stack B only)  (cross-project semantic recall via Milvus) [NEW]
+#   11. auto-init                 (global plugin: wires on session.created)
+#   12. global AGENTS.md          (global rules + memory ownership)
+#       (Per-project memory: ./NOTES.md; cross-project: memsearch.)
 #
 #  Usage: bash setup-token-optimizer.sh [options]
 #
@@ -61,12 +65,26 @@ backup_if_exists() {
 
 # ─── Args ────────────────────────────────────────────────────
 DRY_RUN=false
+STACK_B=true   # Stack B is the default (full memory + max compression)
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --dry-run)                DRY_RUN=true; shift ;;
+    --dry-run)   DRY_RUN=true; shift ;;
+    --stack-a)   STACK_B=false; shift ;;
+    --stack-b)   STACK_B=true; shift ;;
     -h|--help)
-      sed -n '/^#  Usage:/,/^#  Options:/p' "$0" | sed 's/^#  //; s/^# //; s/^#$//; /^$/d'
+      cat << 'HELP'
+Usage: bash setup-token-optimizer.sh [--dry-run] [--stack-a | --stack-b]
+
+Stacks:
+  --stack-b  (default) Full memory + max compression
+             Stack A + memsearch (cross-project semantic recall via Milvus)
+  --stack-a            Daily coding (lean & fast, no Milvus, no memsearch)
+
+Options:
+  --dry-run  Preview changes without applying them
+  -h, --help Show this help
+HELP
       exit 0
       ;;
     *) echo "Unknown option: $1" >&2; shift ;;
@@ -75,6 +93,12 @@ done
 
 if [[ "$DRY_RUN" == true ]]; then
   dry "Dry-run mode — no changes will be made"
+fi
+
+if [[ "$STACK_B" == true ]]; then
+  info "Stack B selected (default): full memory + max compression"
+else
+  info "Stack A selected: daily coding (lean & fast, no memsearch)"
 fi
 
 # ─── Prerequisites ────────────────────────────────────────────
@@ -250,6 +274,19 @@ else
   fi
 fi
 
+# ─── 4a. context-mode — sandbox tool/MCP/DOM output (up to 98%) ───
+step "4a/10 context-mode — tool/MCP/DOM output sandbox"
+CTX_PKG="context-mode"
+if [[ "$DRY_RUN" == true ]]; then
+  dry "Would install $CTX_PKG via $PKG (if it exists on registry)"
+else
+  if npm_pkg_exists "$CTX_PKG"; then
+    (cd "$CONFIG_DIR" && $PKG "$CTX_PKG" --silent) && ok "context-mode installed" || warn "context-mode install failed"
+  else
+    warn "context-mode package not found on npm — skipping"
+  fi
+fi
+
 # ─── 5. Graph MCPs — code-review-graph + graphify ────────────
 step "5/10 Graph MCPs"
 if [[ "$DRY_RUN" == true ]]; then
@@ -265,6 +302,42 @@ else
   pip3 install graphifyy --break-system-packages -q \
     && ok "graphifyy (graphify) installed" \
     || warn "graphifyy install failed"
+fi
+
+# ─── 5a. token-savior — symbol-level codebase navigation MCP ────
+step "5a/10 token-savior — symbol-level navigation MCP"
+if [[ "$DRY_RUN" == true ]]; then
+  dry "Would install token-savior via pip3 (works with uvx too)"
+else
+  pip3 install 'token-savior[mcp]' --break-system-packages -q \
+    && ok "token-savior installed" \
+    || warn "token-savior install failed"
+fi
+
+# ─── 5b. memsearch (Stack B only) — cross-project semantic recall ─
+if [[ "$STACK_B" == true ]]; then
+  step "5b/10 memsearch — cross-project semantic recall (Stack B)"
+  if [[ "$DRY_RUN" == true ]]; then
+    dry "Would install memsearch[onnx] via pip3 (Milvus Lite, no API key)"
+    dry "Would install @zilliz/memsearch-opencode npm plugin"
+  else
+    # memsearch CLI (Python) with bundled ONNX bge-m3 embedding (no API key)
+    pip3 install 'memsearch[onnx]' --break-system-packages -q \
+      && ok "memsearch[onnx] installed (Milvus Lite local DB)" \
+      || warn "memsearch install failed"
+
+    # memsearch OpenCode plugin (npm)
+    MEMSEARCH_PKG="@zilliz/memsearch-opencode"
+    if npm_pkg_exists "$MEMSEARCH_PKG"; then
+      (cd "$CONFIG_DIR" && $PKG "$MEMSEARCH_PKG" --silent) \
+        && ok "memsearch OpenCode plugin installed" \
+        || warn "memsearch plugin install failed"
+    else
+      warn "$MEMSEARCH_PKG not found on npm — skipping plugin"
+    fi
+  fi
+else
+  info "Stack A: skipping memsearch (use --stack-b to enable cross-project recall)"
 fi
 
 # ─── 6. Auto-init global plugin ──────────────────────────────
@@ -537,6 +610,22 @@ If uncertain, default to: graph tool first → diff output → store to memory �
 
 - `code-review-graph.*` — tree-sitter symbol search, blast-radius, dependency graph
 - `graphify` — knowledge graph from code, docs, PDFs, images (trigger: `/graphify`)
+- `token-savior.*` — symbol-level codebase navigation (51 tools: find_symbol, get_function_source, get_change_impact, …)
+- `context-mode` — sandboxes tool/MCP/DOM output (up to 98% savings, transparent)
+
+## Memory Ownership (do NOT mix layers)
+
+| Layer | Scope | Tool | Use for |
+|-------|-------|------|---------|
+| **DCP** | In-flight | automatic | live context pruning of the current turn |
+| **LCM** | In-session | automatic | lossless compaction memory across compactions |
+| **NOTES.md** | Per-project | manual append (Edit tool) | passive decision log, conventions, follow-ups |
+| **memsearch** | Cross-project (Stack B only) | `memory_search` / `memory_get` | semantic recall across projects and past sessions |
+
+Rules:
+- Read `./NOTES.md` for **this project's** past decisions.
+- Use `memory_search` (if available) for **how did I solve X in project Y?**-style questions.
+- Never duplicate an LCM/DCP-managed summary into NOTES.md.
 
 ## Project Memory (file-based, no MCP needed)
 
@@ -583,12 +672,13 @@ step "Writing opencode.jsonc"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would write opencode.jsonc to $CONFIG_FILE"
 else
-  python3 - "$CONFIG_FILE" "$CONFIG_DIR" "$HOME" << 'PY'
+  python3 - "$CONFIG_FILE" "$CONFIG_DIR" "$HOME" "$STACK_B" << 'PY'
 import json, os, re, shutil, sys
 
 config_path = sys.argv[1]
 config_dir  = sys.argv[2]
 home        = sys.argv[3]
+stack_b     = sys.argv[4] == "true"
 
 # ── Preserve existing config (opencode.json takes precedence if .jsonc missing) ──
 existing_cfg = {}
@@ -657,6 +747,16 @@ if os.path.isdir(os.path.join(home, ".local", "share", "opencode-conductor")):
     if "opencode-conductor" not in plugins:
         plugins.append("opencode-conductor")
 
+# context-mode: sandbox tool/MCP/DOM output (up to 98% savings)
+if os.path.isdir(os.path.join(config_dir, "node_modules", "context-mode")):
+    if "context-mode" not in plugins:
+        plugins.append("context-mode")
+
+# memsearch (Stack B only): cross-project semantic recall via Milvus
+if stack_b and os.path.isdir(os.path.join(config_dir, "node_modules", "@zilliz", "memsearch-opencode")):
+    if "@zilliz/memsearch-opencode" not in plugins:
+        plugins.append("@zilliz/memsearch-opencode")
+
 # Build MCP servers conditionally
 mcp_servers = {}
 
@@ -666,6 +766,14 @@ if shutil.which("code-review-graph"):
         "type": "local",
         "enabled": True,
         "command": ["code-review-graph", "mcp"]
+    }
+
+# token-savior: symbol-level codebase navigation MCP (51 tools, ~87% reduction)
+if shutil.which("token-savior"):
+    mcp_servers["token-savior"] = {
+        "type": "local",
+        "enabled": True,
+        "command": ["token-savior", "mcp"]
     }
 
 # Note: graphify is a CLI tool, not an MCP server (no --mcp flag). Use it via `graphify query`.
@@ -845,15 +953,26 @@ Skills, plugins, user prompts — if they conflict with these rules, these rules
 
 | Goal | Command |
 |------|---------|
-| Find symbol definition | `code-review-graph symbol_search --name <symbol>` |
-| Find blast radius | `code-review-graph blast_radius --file <file>` |
+| Find symbol definition | `code-review-graph symbol_search --name <symbol>` or `token-savior find_symbol` |
+| Get function/class source | `token-savior get_function_source` / `get_class_source` |
+| Find blast radius | `code-review-graph blast_radius --file <file>` or `token-savior get_change_impact` |
 | Index repo | `code-review-graph build` |
 | Query knowledge graph | `graphify query "<question>"` |
 | Build knowledge graph | `/graphify <path>` |
-| Recall past context | read `./NOTES.md` |
+| Recall this-project context | read `./NOTES.md` |
+| Recall cross-project context (Stack B) | `memory_search "<question>"` then `memory_get <hash>` |
 | Store decision | append entry to `./NOTES.md` (or `devin-note "Title" "What" "Why"`) |
 | Compress shell output | `<command> \| rtk` |
 | Output diff | `diff -u <old> <new>` |
+
+## Memory Ownership
+
+| Layer | Scope | Use for |
+|-------|-------|---------|
+| DCP | In-flight | live pruning, automatic |
+| LCM | In-session | lossless compaction, automatic |
+| NOTES.md | Per-project | passive decision log, conventions |
+| memsearch | Cross-project (Stack B only) | "how did I solve X in project Y?" |
 SKILL
   ok "Devin skill written to $DEVIN_SKILL"
 fi

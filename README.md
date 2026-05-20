@@ -26,18 +26,33 @@ The old standalone `setup-global-token-rules.sh` is now a **deprecated wrapper**
 ## Quick Start
 
 ```bash
-# Install everything (interactive)
+# Install everything (Stack B: full memory + max compression — DEFAULT)
 bash Agentic_Coding_Tools/install.sh
 
-# Or install only the token optimizer stack
+# Stack A only (lean & fast, no memsearch/Milvus)
+bash Agentic_Coding_Tools/install.sh --stack-a
+
+# Or install only the token optimizer stack (Stack B default)
 bash Agentic_Coding_Tools/scripts/setup-token-optimizer.sh
+bash Agentic_Coding_Tools/scripts/setup-token-optimizer.sh --stack-a   # opt out of memsearch
 
 # Dry-run to preview changes
 bash Agentic_Coding_Tools/scripts/setup-token-optimizer.sh --dry-run
-
-# Or use the deprecated wrapper (delegates to setup-token-optimizer.sh)
-bash Agentic_Coding_Tools/scripts/setup-global-token-rules.sh
 ```
+
+### Stacks
+
+| | Stack A (`--stack-a`) | **Stack B (default)** |
+|---|---|---|
+| DCP, LCM, Skillful, Conductor, RTK | ✓ | ✓ |
+| context-mode (tool/MCP output sandbox) | ✓ | ✓ |
+| code-review-graph + graphify | ✓ | ✓ |
+| token-savior (symbol nav MCP) | ✓ | ✓ |
+| **memsearch (cross-project semantic recall)** | ✗ | **✓** |
+| Infrastructure | None | Milvus Lite (local) |
+| Best for | 1–2 repos, short sessions | Many repos, long projects |
+
+Start with Stack B unless you specifically want a lean install. Switch to `--stack-a` if you don't need cross-project recall.
 
 After installation, start OpenCode:
 

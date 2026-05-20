@@ -14,6 +14,8 @@
 #    --skip-opencode          Skip opencode CLI install/check
 #    --skip-openagent         Skip oh-my-openagent setup
 #    --skip-token-optimizer   Skip token optimizer setup
+#    --stack-a                Daily-coding lean stack (no memsearch/Milvus)
+#    --stack-b                (default) Full memory + max compression
 #    --force                  Overwrite existing configs without prompting
 #    --dry-run                Preview changes without applying them
 #    --yes / -y               Auto-answer "yes" to all prompts (for CI)
@@ -63,12 +65,15 @@ SKIP_OPENAGENT=false
 SKIP_TOKENS=false
 FORCE=false
 DRY_RUN=false
+STACK_FLAG=""   # "--stack-a" or "--stack-b"; empty = use script default (Stack B)
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --skip-opencode)          SKIP_OPENCODE=true; shift ;;
     --skip-openagent)         SKIP_OPENAGENT=true; shift ;;
     --skip-token-optimizer)   SKIP_TOKENS=true; shift ;;
+    --stack-a)                STACK_FLAG="--stack-a"; shift ;;
+    --stack-b)                STACK_FLAG="--stack-b"; shift ;;
     --force)                  FORCE=true; shift ;;
     --dry-run)                DRY_RUN=true; shift ;;
     --yes|-y)                 AC_YES=1; shift ;;
@@ -567,6 +572,7 @@ else
   # Build token optimizer args
   TOKEN_ARGS=()
   [[ "$DRY_RUN" == true ]] && TOKEN_ARGS+=("--dry-run")
+  [[ -n "$STACK_FLAG" ]]    && TOKEN_ARGS+=("$STACK_FLAG")
 
   if [[ "$DRY_RUN" == true ]]; then
     dry "Would run: bash $TOKEN_SCRIPT ${TOKEN_ARGS[*]}"
