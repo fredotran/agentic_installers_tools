@@ -49,6 +49,14 @@ npm_pkg_exists() {
   npm view "$1" --json >/dev/null 2>&1
 }
 
+npm_pkg_installed() {
+  [[ -d "$CONFIG_DIR/node_modules/$1" ]]
+}
+
+pip_pkg_installed() {
+  pip3 show "$1" >/dev/null 2>&1
+}
+
 py_major_minor() {
   python3 -c 'import sys; print(f"{sys.version_info.major}.{sys.version_info.minor}")'
 }
@@ -157,6 +165,8 @@ step "1/10 DCP — Dynamic Context Pruning"
 DCP_PKG="@tarquinen/opencode-dcp"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $DCP_PKG via $PKG (if it exists on registry)"
+elif npm_pkg_installed "$DCP_PKG"; then
+  ok "DCP already installed — skipping installation because it's already done"
 else
   if npm_pkg_exists "$DCP_PKG"; then
     (cd "$CONFIG_DIR" && $PKG "$DCP_PKG" --silent) && ok "DCP installed" || warn "DCP install failed"
@@ -170,6 +180,8 @@ step "2/10 Skillful — lazy skill loading"
 SKILL_PKG="@zenobius/opencode-skillful"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $SKILL_PKG via $PKG (if it exists on registry)"
+elif npm_pkg_installed "$SKILL_PKG"; then
+  ok "Skillful already installed — skipping installation because it's already done"
 else
   if npm_pkg_exists "$SKILL_PKG"; then
     (cd "$CONFIG_DIR" && $PKG "$SKILL_PKG" --silent) && ok "Skillful installed" || warn "Skillful install failed"
@@ -183,6 +195,8 @@ step "2a/10 LCM — long-memory archive & recall"
 LCM_PKG="opencode-lcm"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $LCM_PKG via $PKG (if it exists on registry)"
+elif npm_pkg_installed "$LCM_PKG"; then
+  ok "LCM already installed — skipping installation because it's already done"
 else
   if npm_pkg_exists "$LCM_PKG"; then
     (cd "$CONFIG_DIR" && $PKG "$LCM_PKG" --silent) && ok "LCM installed" || warn "LCM install failed"
@@ -279,6 +293,8 @@ step "4a/10 context-mode — tool/MCP/DOM output sandbox"
 CTX_PKG="context-mode"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $CTX_PKG via $PKG (if it exists on registry)"
+elif npm_pkg_installed "$CTX_PKG"; then
+  ok "context-mode already installed — skipping installation because it's already done"
 else
   if npm_pkg_exists "$CTX_PKG"; then
     (cd "$CONFIG_DIR" && $PKG "$CTX_PKG" --silent) && ok "context-mode installed" || warn "context-mode install failed"
@@ -294,20 +310,30 @@ if [[ "$DRY_RUN" == true ]]; then
   dry "Would install graphifyy via pip3 (requires Python 3.10+)"
 else
   # code-review-graph: tree-sitter symbol search, blast radius, dependency graph
-  pip3 install code-review-graph --break-system-packages -q \
-    && ok "code-review-graph installed" \
-    || warn "code-review-graph install failed"
+  if pip_pkg_installed code-review-graph; then
+    ok "code-review-graph already installed — skipping installation because it's already done"
+  else
+    pip3 install code-review-graph --break-system-packages -q \
+      && ok "code-review-graph installed" \
+      || warn "code-review-graph install failed"
+  fi
 
   # graphify: knowledge graph from code + docs + images (PyPI name is graphifyy temporarily)
-  pip3 install graphifyy --break-system-packages -q \
-    && ok "graphifyy (graphify) installed" \
-    || warn "graphifyy install failed"
+  if pip_pkg_installed graphifyy; then
+    ok "graphifyy already installed — skipping installation because it's already done"
+  else
+    pip3 install graphifyy --break-system-packages -q \
+      && ok "graphifyy (graphify) installed" \
+      || warn "graphifyy install failed"
+  fi
 fi
 
 # ─── 5a. token-savior — symbol-level codebase navigation MCP ────
 step "5a/10 token-savior — symbol-level navigation MCP"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install token-savior via pip3 (works with uvx too)"
+elif pip_pkg_installed token-savior; then
+  ok "token-savior already installed — skipping installation because it's already done"
 else
   pip3 install 'token-savior[mcp]' --break-system-packages -q \
     && ok "token-savior installed" \
@@ -322,13 +348,19 @@ if [[ "$STACK_B" == true ]]; then
     dry "Would install @zilliz/memsearch-opencode npm plugin"
   else
     # memsearch CLI (Python) with bundled ONNX bge-m3 embedding (no API key)
-    pip3 install 'memsearch[onnx]' --break-system-packages -q \
-      && ok "memsearch[onnx] installed (Milvus Lite local DB)" \
-      || warn "memsearch install failed"
+    if pip_pkg_installed memsearch; then
+      ok "memsearch already installed — skipping installation because it's already done"
+    else
+      pip3 install 'memsearch[onnx]' --break-system-packages -q \
+        && ok "memsearch[onnx] installed (Milvus Lite local DB)" \
+        || warn "memsearch install failed"
+    fi
 
     # memsearch OpenCode plugin (npm)
     MEMSEARCH_PKG="@zilliz/memsearch-opencode"
-    if npm_pkg_exists "$MEMSEARCH_PKG"; then
+    if npm_pkg_installed "$MEMSEARCH_PKG"; then
+      ok "memsearch OpenCode plugin already installed — skipping installation because it's already done"
+    elif npm_pkg_exists "$MEMSEARCH_PKG"; then
       (cd "$CONFIG_DIR" && $PKG "$MEMSEARCH_PKG" --silent) \
         && ok "memsearch OpenCode plugin installed" \
         || warn "memsearch plugin install failed"
