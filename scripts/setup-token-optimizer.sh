@@ -9,10 +9,11 @@
 #    1. opencode-dynamic-context-pruning (DCP)
 #    2. opencode-skillful         (lazy skill loading)
 #    3. opencode-conductor        (lifecycle scoping)
-#    4. RTK                       (CLI output compression)
-#    5. code-review-graph  (tree-sitter search MCP)
-#    6. auto-init.ts              (global plugin: wires everything on session.created)
-#    7. global AGENTS.md          (global rules injected every session)
+#    4. opencode-lcm              (lossless context memory)
+#    5. RTK                       (CLI output compression)
+#    6. code-review-graph  (tree-sitter search MCP)
+#    7. auto-init.ts              (global plugin: wires everything on session.created)
+#    8. global AGENTS.md          (global rules injected every session)
 #       (Project memory is file-based — append decisions to ./NOTES.md per project)
 #
 #  Usage: bash setup-token-optimizer.sh [options]
@@ -150,6 +151,19 @@ else
     (cd "$CONFIG_DIR" && $PKG "$SKILL_PKG" --silent) && ok "Skillful installed" || warn "Skillful install failed"
   else
     warn "Skillful package '$SKILL_PKG' not found on npm — skipping"
+  fi
+fi
+
+# ─── 2a. LCM — Lossless Context Memory ──────────────────────
+step "2a/10 LCM — long-memory archive & recall"
+LCM_PKG="opencode-lcm"
+if [[ "$DRY_RUN" == true ]]; then
+  dry "Would install $LCM_PKG via $PKG (if it exists on registry)"
+else
+  if npm_pkg_exists "$LCM_PKG"; then
+    (cd "$CONFIG_DIR" && $PKG "$LCM_PKG" --silent) && ok "LCM installed" || warn "LCM install failed"
+  else
+    warn "LCM package '$LCM_PKG' not found on npm — skipping"
   fi
 fi
 
@@ -612,6 +626,33 @@ if os.path.isdir(os.path.join(config_dir, "node_modules", "@tarquinen", "opencod
 if os.path.isdir(os.path.join(config_dir, "node_modules", "@zenobius", "opencode-skillful")):
     if "@zenobius/opencode-skillful" not in plugins:
         plugins.append("@zenobius/opencode-skillful")
+
+# opencode-lcm: long-memory archive & recall (interop with DCP)
+lcm_found = any(
+    (isinstance(p, str) and p == "opencode-lcm") or
+    (isinstance(p, (list, tuple)) and len(p) > 0 and p[0] == "opencode-lcm")
+    for p in plugins
+)
+if os.path.isdir(os.path.join(config_dir, "node_modules", "opencode-lcm")):
+    if not lcm_found:
+        plugins.append([
+            "opencode-lcm",
+            {
+                "interop": {
+                    "neverOverrideCompactionPrompt": True
+                },
+                "automaticRetrieval": {
+                    "enabled": True,
+                    "scopeOrder": ["session", "root"],
+                    "scopeBudgets": {"session": 16, "root": 12}
+                },
+                "retention": {
+                    "staleSessionDays": 90,
+                    "deletedSessionDays": 30,
+                    "orphanBlobDays": 14
+                }
+            }
+        ])
 if os.path.isdir(os.path.join(home, ".local", "share", "opencode-conductor")):
     if "opencode-conductor" not in plugins:
         plugins.append("opencode-conductor")

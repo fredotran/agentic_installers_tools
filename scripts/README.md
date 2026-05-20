@@ -4,13 +4,14 @@ This document summarizes every customization applied to OpenCode compared to a f
 
 ---
 
-## 1. Plugin Stack (6 plugins vs. 0 stock)
+## 1. Plugin Stack (7 plugins vs. 0 stock)
 
 | Plugin | Source | Purpose |
 |--------|--------|---------|
 | `@tarquinen/opencode-dcp` | npm | Dynamic Context Pruning — auto-compresses stale conversation history |
 | `@zenobius/opencode-skillful` | npm | Skills framework — loads `SKILL.md` files into context |
 | `opencode-conductor` | npm | Agent orchestration & task delegation |
+| `opencode-lcm` | npm | Lossless Context Memory — archives and recalls old session context |
 | `oh-my-openagent@latest` | npm | Multi-agent workflows, model routing, categories |
 | `~/.config/opencode/node_modules/superpowers` | local | Auto-registers skills from `~/.config/opencode/skills/` |
 | `~/.config/opencode/plugin/auto-init.js` | local | Session bootstrap — loads token-saver mode + runs startup sequence |
