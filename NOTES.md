@@ -23,3 +23,11 @@
 - Added normalization loop to `setup-token-optimizer.sh` that converts existing `command`+`args` into `command` array and strips non-schema `description`.
 - Prevents re-running the script from preserving invalid legacy fields.
 - none
+
+## 2026-05-20 01:30 — Add opencode-lcm (Lossless Context Memory) plugin
+
+- Added `opencode-lcm` npm install step to `scripts/setup-token-optimizer.sh`.
+- Added `opencode-lcm` to plugin list with interop config (`neverOverrideCompactionPrompt: true`) for DCP coexistence.
+- Updated `scripts/run-benchmark.sh` to include opencode-lcm in the generated opencode.jsonc template.
+- Updated `scripts/README.md` plugin stack table.
+- none

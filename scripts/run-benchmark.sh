@@ -455,7 +455,25 @@ else
     "@zenobius/opencode-skillful",
     "opencode-conductor",
     "opencode-tokenscope",
-    "opencode-token-monitor"
+    "opencode-token-monitor",
+    ["opencode-lcm", {
+      "interop": {
+        "neverOverrideCompactionPrompt": true
+      },
+      "automaticRetrieval": {
+        "enabled": true,
+        "scopeOrder": ["session", "root"],
+        "scopeBudgets": {
+          "session": 16,
+          "root": 12
+        }
+      },
+      "retention": {
+        "staleSessionDays": 90,
+        "deletedSessionDays": 30,
+        "orphanBlobDays": 14
+      }
+    }]
   ],
   "instructions": ["node_modules/@tarquinen/opencode-dcp/instructions/dcp.md"],
   "mcp": {
