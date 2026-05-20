@@ -1,0 +1,5 @@
+# graphify build artifacts
+graphify-out/
+
+# opencode local plugins (project-specific, auto-generated)
+.opencode/
