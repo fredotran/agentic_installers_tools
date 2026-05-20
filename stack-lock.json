@@ -1,0 +1,104 @@
+{
+  "$schema": "https://opencode.ai/stack-lock.json",
+  "description": "Known-good versions for the agentic coding tools stack. Update with care.",
+  "lastVerified": "2026-05-21",
+  "python": {
+    "code-review-graph": {
+      "version": "2.3.3",
+      "installer": "pip3",
+      "constraint": ">=2.3.3",
+      "mcp": true,
+      "note": "Tree-sitter symbol search and blast radius"
+    },
+    "graphifyy": {
+      "version": "0.8.13",
+      "installer": "pip3",
+      "constraint": ">=0.8.13",
+      "mcp": false,
+      "note": "Knowledge graph CLI (not MCP). PyPI name is graphifyy"
+    },
+    "token-savior": {
+      "version": "1.0.0",
+      "installer": "pip3",
+      "constraint": ">=1.0.0",
+      "mcp": true,
+      "note": "Symbol-level codebase navigation MCP"
+    },
+    "memsearch": {
+      "version": "0.4.3",
+      "installer": "pip3",
+      "constraint": ">=0.4.3",
+      "mcp": false,
+      "note": "Semantic memory search (Stack B only)"
+    },
+    "fastmcp": {
+      "version": "3.2.4",
+      "installer": "pip3",
+      "constraint": "==3.2.4",
+      "pinReason": "3.3.0+ breaks code-review-graph and token-savior prompt rendering (dict vs Message). DO NOT UPGRADE until upstream fixes.",
+      "mcp": false,
+      "note": "Transitive dep \u2014 pinned for stability"
+    },
+    "mcp": {
+      "version": "1.27.1",
+      "installer": "pip3",
+      "constraint": ">=1.0.0,<2.0.0",
+      "mcp": false,
+      "note": "MCP protocol SDK"
+    }
+  },
+  "npm": {
+    "@tarquinen/opencode-dcp": {
+      "version": "3.1.12",
+      "installer": "npm|bun",
+      "constraint": "*",
+      "note": "Dynamic context pruning (not found on public registry \u2014 may be private/local)"
+    },
+    "@zenobius/opencode-skillful": {
+      "version": "1.2.5",
+      "installer": "npm|bun",
+      "constraint": "*",
+      "note": "Lazy skill loading (not found on public registry)"
+    },
+    "opencode-lcm": {
+      "version": "0.14.4",
+      "installer": "npm|bun",
+      "constraint": "*",
+      "note": "Lossless context memory (not found on public registry)"
+    },
+    "context-mode": {
+      "version": "1.0.146",
+      "installer": "npm|bun",
+      "constraint": "*",
+      "note": "Sandbox tool/MCP/DOM output (not found on public registry)"
+    },
+    "@zilliz/memsearch-opencode": {
+      "version": "0.3.0",
+      "installer": "npm|bun",
+      "constraint": "*",
+      "note": "Cross-project semantic recall plugin (Stack B only, not found on public registry)"
+    }
+  },
+  "git": {
+    "opencode-conductor": {
+      "url": "https://github.com/derekbar90/opencode-conductor",
+      "dir": "~/.local/share/opencode-conductor",
+      "branch": "main",
+      "note": "Lifecycle scoping plugin"
+    }
+  },
+  "cargo": {
+    "rtk": {
+      "repo": "https://github.com/rtk-ai/rtk",
+      "version": "0.40.0",
+      "constraint": ">=0.40.0",
+      "note": "Rust Token Killer \u2014 CLI output compression"
+    }
+  },
+  "updatePolicy": {
+    "autoUpdatePinned": false,
+    "checkIntervalDays": 7,
+    "notifyOnMismatch": true,
+    "strategy": "conservative"
+  }
+}

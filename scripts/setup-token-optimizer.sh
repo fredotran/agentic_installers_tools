@@ -128,6 +128,62 @@ SKILLS_DIR="$CONFIG_DIR/skills"
 CONFIG_FILE="$CONFIG_DIR/opencode.jsonc"
 AGENTS_MD="$CONFIG_DIR/AGENTS.md"
 
+# Lockfile for pinned versions
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
+LOCKFILE="$REPO_DIR/stack-lock.json"
+
+# Read version from lockfile (falls back to unconstrained if missing)
+lock_version() {
+  local pkg="$1"
+  if [[ -f "$LOCKFILE" ]]; then
+    python3 -c "
+import json, sys
+try:
+    lock = json.load(open('$LOCKFILE'))
+    for section in ['python', 'npm', 'cargo']:
+        if '$pkg' in lock.get(section, {}):
+            meta = lock[section]['$pkg']
+            print(meta.get('version', 'latest'))
+            sys.exit(0)
+except Exception:
+    pass
+print('latest')
+" 2>/dev/null
+  else
+    echo "latest"
+  fi
+}
+
+# Read install constraint from lockfile
+lock_constraint() {
+  local pkg="$1"
+  if [[ -f "$LOCKFILE" ]]; then
+    python3 -c "
+import json, sys
+try:
+    lock = json.load(open('$LOCKFILE'))
+    for section in ['python', 'npm', 'cargo']:
+        if '$pkg' in lock.get(section, {}):
+            meta = lock[section]['$pkg']
+            ver = meta.get('version', 'latest')
+            con = meta.get('constraint', '*')
+            if con.startswith('=='):
+                print(con)
+            elif con.startswith('>='):
+                print('$pkg' + con)
+            else:
+                print('$pkg=={}'.format(ver))
+            sys.exit(0)
+except Exception:
+    pass
+print('$pkg')
+" 2>/dev/null
+  else
+    echo "$pkg"
+  fi
+}
+
 # Cross-platform rule paths
 DEVIN_SKILL_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/devin/skills/token-optimizer"
 DEVIN_SKILL="$DEVIN_SKILL_DIR/SKILL.md"
@@ -161,7 +217,7 @@ mkdir -p "$CONFIG_DIR" "$PLUGIN_DIR" "$SKILLS_DIR"
 ok "Config dir ready: $CONFIG_DIR"
 
 # ─── 1. DCP ──────────────────────────────────────────────────
-step "1/10 DCP — Dynamic Context Pruning"
+step "1/15 DCP — Dynamic Context Pruning"
 DCP_PKG="@tarquinen/opencode-dcp"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $DCP_PKG via $PKG (if it exists on registry)"
@@ -176,7 +232,7 @@ else
 fi
 
 # ─── 2. Skillful ─────────────────────────────────────────────
-step "2/10 Skillful — lazy skill loading"
+step "2/15 Skillful — lazy skill loading"
 SKILL_PKG="@zenobius/opencode-skillful"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $SKILL_PKG via $PKG (if it exists on registry)"
@@ -191,7 +247,7 @@ else
 fi
 
 # ─── 2a. LCM — Lossless Context Memory ──────────────────────
-step "2a/10 LCM — long-memory archive & recall"
+step "2a/15 LCM — long-memory archive & recall"
 LCM_PKG="opencode-lcm"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $LCM_PKG via $PKG (if it exists on registry)"
@@ -225,7 +281,7 @@ SKILL
 fi
 
 # ─── 3. Conductor ────────────────────────────────────────────
-step "3/10 Conductor — lifecycle scoping"
+step "3/15 Conductor — lifecycle scoping"
 CONDUCTOR_DIR="$HOME/.local/share/opencode-conductor"
 if [[ "$DRY_RUN" == true ]]; then
   if [[ -d "$CONDUCTOR_DIR" ]]; then
@@ -253,7 +309,7 @@ else
 fi
 
 # ─── 4. RTK ──────────────────────────────────────────────────
-step "4/10 RTK — Rust Token Killer"
+step "4/15 RTK — Rust Token Killer"
 
 # Verify if correct RTK is already installed (not the wrong Rust Toolkit)
 rtk_is_correct() {
@@ -289,7 +345,7 @@ else
 fi
 
 # ─── 4a. context-mode — sandbox tool/MCP/DOM output (up to 98%) ───
-step "4a/10 context-mode — tool/MCP/DOM output sandbox"
+step "4a/15 context-mode — tool/MCP/DOM output sandbox"
 CTX_PKG="context-mode"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install $CTX_PKG via $PKG (if it exists on registry)"
@@ -303,8 +359,24 @@ else
   fi
 fi
 
+# ─── 4b. Pin fastmcp (compatibility guard) ────────────────────
+step "4b/15 Pinning fastmcp (compatibility guard)"
+FASTMCP_CONSTRAINT=$(lock_constraint fastmcp)
+if [[ "$DRY_RUN" == true ]]; then
+  dry "Would pin fastmcp to locked version: $FASTMCP_CONSTRAINT"
+else
+  if [[ "$FASTMCP_CONSTRAINT" == "fastmcp" ]]; then
+    info "No fastmcp pin in lockfile — leaving unconstrained"
+  else
+    info "Pinning fastmcp: $FASTMCP_CONSTRAINT"
+    pip3 install "$FASTMCP_CONSTRAINT" --break-system-packages -q \
+      && ok "fastmcp pinned" \
+      || warn "fastmcp pin failed"
+  fi
+fi
+
 # ─── 5. Graph MCPs — code-review-graph + graphify ────────────
-step "5/10 Graph MCPs"
+step "5/15 Graph MCPs"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install code-review-graph via pip3 (requires Python 3.10+)"
   dry "Would install graphifyy via pip3 (requires Python 3.10+)"
@@ -313,7 +385,8 @@ else
   if pip_pkg_installed code-review-graph; then
     ok "code-review-graph already installed — skipping installation because it's already done"
   else
-    pip3 install code-review-graph --break-system-packages -q \
+    info "Installing $(lock_constraint code-review-graph)…"
+    pip3 install "$(lock_constraint code-review-graph)" --break-system-packages -q \
       && ok "code-review-graph installed" \
       || warn "code-review-graph install failed"
   fi
@@ -322,27 +395,29 @@ else
   if pip_pkg_installed graphifyy; then
     ok "graphifyy already installed — skipping installation because it's already done"
   else
-    pip3 install graphifyy --break-system-packages -q \
+    info "Installing $(lock_constraint graphifyy)…"
+    pip3 install "$(lock_constraint graphifyy)" --break-system-packages -q \
       && ok "graphifyy (graphify) installed" \
       || warn "graphifyy install failed"
   fi
 fi
 
 # ─── 5a. token-savior — symbol-level codebase navigation MCP ────
-step "5a/10 token-savior — symbol-level navigation MCP"
+step "5a/15 token-savior — symbol-level navigation MCP"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would install token-savior via pip3 (works with uvx too)"
 elif pip_pkg_installed token-savior; then
   ok "token-savior already installed — skipping installation because it's already done"
 else
-  pip3 install 'token-savior[mcp]' --break-system-packages -q \
+  info "Installing $(lock_constraint token-savior)…"
+  pip3 install "$(lock_constraint token-savior)[mcp]" --break-system-packages -q \
     && ok "token-savior installed" \
     || warn "token-savior install failed"
 fi
 
 # ─── 5b. memsearch (Stack B only) — cross-project semantic recall ─
 if [[ "$STACK_B" == true ]]; then
-  step "5b/10 memsearch — cross-project semantic recall (Stack B)"
+  step "5b/15 memsearch — cross-project semantic recall (Stack B)"
   if [[ "$DRY_RUN" == true ]]; then
     dry "Would install memsearch[onnx] via pip3 (Milvus Lite, no API key)"
     dry "Would install @zilliz/memsearch-opencode npm plugin"
@@ -351,7 +426,8 @@ if [[ "$STACK_B" == true ]]; then
     if pip_pkg_installed memsearch; then
       ok "memsearch already installed — skipping installation because it's already done"
     else
-      pip3 install 'memsearch[onnx]' --break-system-packages -q \
+      info "Installing $(lock_constraint memsearch)…"
+      pip3 install "$(lock_constraint memsearch)[onnx]" --break-system-packages -q \
         && ok "memsearch[onnx] installed (Milvus Lite local DB)" \
         || warn "memsearch install failed"
     fi
@@ -374,7 +450,7 @@ fi
 
 # ─── 6. Auto-init global plugin ──────────────────────────────
 # (OpenMemory MCP removed — replaced by file-based NOTES.md per-project)
-step "6/10 Writing global auto-init plugin (~/.config/opencode/plugin/)"
+step "6/15 Writing global auto-init plugin (~/.config/opencode/plugin/)"
 
 # Detect whether user already has auto-init.js or auto-init.ts
 if [[ -f "$PLUGIN_DIR/auto-init.js" ]]; then
@@ -509,7 +585,7 @@ TS
 fi
 
 # ─── 7. Global AGENTS.md ──────────────────────────────────────
-step "7/10 Writing global AGENTS.md (~/.config/opencode/AGENTS.md)"
+step "7/15 Writing global AGENTS.md (~/.config/opencode/AGENTS.md)"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would write AGENTS.md to $AGENTS_MD"
 else
@@ -848,7 +924,7 @@ else
 fi
 
 # ─── 8. Devin Skill ──────────────────────────────────────────
-step "8/10 Devin — ~/.config/devin/skills/token-optimizer/"
+step "8/15 Devin — ~/.config/devin/skills/token-optimizer/"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would write SKILL.md to $DEVIN_SKILL"
 else
@@ -999,7 +1075,7 @@ SKILL
 fi
 
 # ─── 9. Windsurf Skill ───────────────────────────────────────
-step "9/10 Windsurf — ~/.codeium/windsurf/skills/token-optimizer/"
+step "9/15 Windsurf — ~/.codeium/windsurf/skills/token-optimizer/"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would write SKILL.md to $WINDSURF_SKILL"
 else
@@ -1014,7 +1090,7 @@ fi
 # Note: `auto_load_skills` is honored by Cascade and Windsurf only.
 # Devin for Terminal IGNORES this field — skills must be invoked via the
 # `skill` tool or referenced by AGENTS.md.
-step "10/10 Cascade/Windsurf global_rules.md — auto-load token-optimizer"
+step "10/15 Cascade/Windsurf global_rules.md — auto-load token-optimizer"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would add token-optimizer to auto_load_skills in $GLOBAL_RULES (Cascade/Windsurf only — Devin ignores)"
 else
