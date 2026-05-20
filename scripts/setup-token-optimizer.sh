@@ -789,27 +789,14 @@ if stack_b and os.path.isdir(os.path.join(config_dir, "node_modules", "@zilliz",
     if "@zilliz/memsearch-opencode" not in plugins:
         plugins.append("@zilliz/memsearch-opencode")
 
-# Build MCP servers conditionally
-mcp_servers = {}
-
-# code-review-graph: tree-sitter symbol search, blast radius (works on Python 3.10+)
-if shutil.which("code-review-graph"):
-    mcp_servers["code-review-graph"] = {
-        "type": "local",
-        "enabled": True,
-        "command": ["code-review-graph", "mcp"]
-    }
-
-# token-savior: symbol-level codebase navigation MCP (51 tools, ~87% reduction)
-if shutil.which("token-savior"):
-    mcp_servers["token-savior"] = {
-        "type": "local",
-        "enabled": True,
-        "command": ["token-savior", "mcp"]
-    }
-
-# Note: graphify is a CLI tool, not an MCP server (no --mcp flag). Use it via `graphify query`.
-# Note: openmemory MCP server removed — project memory is now file-based via NOTES.md.
+# MCP servers disabled: code-review-graph and token-savior MCP implementations are
+# currently broken (prompt rendering crashes, method not found errors). They inject
+# huge broken prompt templates into the system message, causing API "Bad Request".
+# Use them as CLI tools instead:
+#   - code-review-graph <command>  (e.g. symbol_search, blast_radius)
+#   - token-savior <command>       (e.g. find_symbol, get_function_source)
+#   - graphify query "<question>"  (CLI, not MCP)
+# Note: openmemory MCP server removed — project memory is file-based via NOTES.md.
 
 cfg = existing_cfg.copy()
 cfg["$schema"] = "https://opencode.ai/config.json"
@@ -818,7 +805,8 @@ if plugins:
 if instructions:
     cfg["instructions"] = instructions
 
-# Merge MCP servers (preserve existing, add new)
+# Preserve any existing MCP config the user already has (e.g. custom servers)
+# but do NOT add broken code-review-graph / token-savior MCP servers.
 # Schema: mcp is a flat map of <server-name> -> server-config (no nested "servers" key)
 existing_mcp = cfg.get("mcp", {})
 # Migrate legacy nested "servers" wrapper if present
@@ -833,12 +821,13 @@ for name, srv in list(existing_mcp.items()):
             srv["command"] = [srv["command"]] + list(srv["args"])
             srv.pop("args", None)
         srv.pop("description", None)  # not part of schema
-if mcp_servers:
-    merged_mcp = existing_mcp.copy()
-    merged_mcp.update(mcp_servers)
-    cfg["mcp"] = merged_mcp
-elif existing_mcp:
+# Strip broken MCP servers if they somehow got in there
+for broken in ("code-review-graph", "token-savior"):
+    existing_mcp.pop(broken, None)
+if existing_mcp:
     cfg["mcp"] = existing_mcp
+else:
+    cfg.pop("mcp", None)
 
 with open(config_path, "w") as f:
     json.dump(cfg, f, indent=2)
