@@ -30,3 +30,8 @@
 - Updated `run-benchmark.sh` and `scripts/README.md`.
 - Rebuilt branch from current main to avoid reverting graphify fixes from stale `feat/opencode-lcm`.
 - none
+
+## 2026-05-19 23:55 — Stack A/B support
+- Added context-mode, token-savior, memsearch packages with --stack-a/--stack-b flags (Stack B is default)
+- memsearch only installs on Stack B; token-savior + context-mode in both
+- Follow-ups: none
