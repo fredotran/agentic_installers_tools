@@ -159,11 +159,12 @@ if [[ "$DRY_RUN" == true ]]; then
 else
   cat > "$SKILLS_DIR/token-saver.md" << 'SKILL'
 ---
-description: Token-efficient mode — AST-first, terse output, diffs not full files
+description: Token-efficient mode — graph-first, terse output, diffs not full files
 ---
 You are in token-saver mode. Apply these rules for every response:
-- Use code-review-graph MCP tools for all symbol lookups and file searches
-- Never read full files unless the task requires it — use AST summaries
+- Use `code-review-graph` for symbol lookups, blast radius, and dependency queries
+- Use `graphify query` for architecture questions, "explain this project", and community detection (if graphify-out/graph.json exists)
+- NEVER use grep/find/rg for discovery — graph tools first, targeted reads second (max 3 files)
 - Apply edits as unified diffs (udiff format), not full rewrites
 - Keep responses terse — no padding, no markdown fluff, no restating the question
 - After any file edit, append a one-line decision entry to ./NOTES.md
@@ -365,14 +366,16 @@ export const AutoInit: Plugin = async ({ client }) => {
       output.context.push(`<preserved-state>
   Working directory: ${state?.cwd || process.cwd()}
   Token-saver mode: active
-  Rules: use code-review-graph or graphify MCP for searches, output diffs not full files, append decisions to ./NOTES.md
+  Rules: use code-review-graph for symbol/dependency queries; use graphify query for architecture questions (if graphify-out/graph.json exists); output diffs not full files; append decisions to ./NOTES.md
 </preserved-state>`)
     },
 
     // ── 4. System prompt injection ──
     "experimental.chat.system.transform": async (_input, output) => {
       output.system.push(`<global-token-rules>
-  - ALWAYS use code-review-graph MCP tools for symbol lookups and codebase searches
+  - ALWAYS use code-review-graph MCP for symbol lookups and dependency queries
+  - ALWAYS use graphify query for architecture questions, "explain this project", community detection (if graphify-out/graph.json exists)
+  - NEVER use grep/find/rg for discovery — graph tools first, targeted reads second (max 3 files)
   - ALWAYS read ./NOTES.md (project decision log) before starting any new task
   - Output code changes as unified diffs (udiff), not full file rewrites
   - Keep responses terse — no restating the question, no padding

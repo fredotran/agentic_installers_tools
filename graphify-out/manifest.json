@@ -1,0 +1,32 @@
+{
+  "/home/frederichtran199/Code/agentic_installers_tools/install.sh": {
+    "mtime": 1779230509.5872862,
+    "ast_hash": "65ec2fc23a8c4973305b120660a7b038",
+    "semantic_hash": "65ec2fc23a8c4973305b120660a7b038"
+  },
+  "/home/frederichtran199/Code/agentic_installers_tools/scripts/backup-restore-ai-configs.sh": {
+    "mtime": 1779224358.7994645,
+    "ast_hash": "4dd4b40812e44a886c55665a43d0a12d",
+    "semantic_hash": "4dd4b40812e44a886c55665a43d0a12d"
+  },
+  "/home/frederichtran199/Code/agentic_installers_tools/scripts/run-benchmark.sh": {
+    "mtime": 1779235621.028538,
+    "ast_hash": "4860462fcd10323322696385edd2bbdb",
+    "semantic_hash": "4860462fcd10323322696385edd2bbdb"
+  },
+  "/home/frederichtran199/Code/agentic_installers_tools/.opencode/opencode.json": {
+    "mtime": 1779235913.0743287,
+    "ast_hash": "abcc8b9dcd80bca5f9dde6d9f0c3ae79",
+    "semantic_hash": "abcc8b9dcd80bca5f9dde6d9f0c3ae79"
+  },
+  "/home/frederichtran199/Code/agentic_installers_tools/.opencode/plugins/graphify.js": {
+    "mtime": 1779235913.0743287,
+    "ast_hash": "64ccd3c03dbfe0980b6095766f5c4e52",
+    "semantic_hash": "64ccd3c03dbfe0980b6095766f5c4e52"
+  },
+  "/home/frederichtran199/Code/agentic_installers_tools/.devin/config.local.json": {
+    "mtime": 1779222482.7387342,
+    "ast_hash": "d040866cb3f69ea119dd4cd510dcce2c",
+    "semantic_hash": "d040866cb3f69ea119dd4cd510dcce2c"
+  }
+}

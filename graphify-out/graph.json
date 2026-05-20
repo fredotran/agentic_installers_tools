@@ -1,0 +1,1148 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "install.sh",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L1",
+      "id": "install_sh",
+      "community": 0,
+      "norm_label": "install.sh"
+    },
+    {
+      "label": "ok()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L32",
+      "id": "agentic_installers_tools_install_ok",
+      "community": 3,
+      "norm_label": "ok()"
+    },
+    {
+      "label": "info()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L33",
+      "id": "agentic_installers_tools_install_info",
+      "community": 0,
+      "norm_label": "info()"
+    },
+    {
+      "label": "warn()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L34",
+      "id": "agentic_installers_tools_install_warn",
+      "community": 3,
+      "norm_label": "warn()"
+    },
+    {
+      "label": "err()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L35",
+      "id": "agentic_installers_tools_install_err",
+      "community": 6,
+      "norm_label": "err()"
+    },
+    {
+      "label": "step()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L36",
+      "id": "agentic_installers_tools_install_step",
+      "community": 0,
+      "norm_label": "step()"
+    },
+    {
+      "label": "dry()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L37",
+      "id": "agentic_installers_tools_install_dry",
+      "community": 3,
+      "norm_label": "dry()"
+    },
+    {
+      "label": "ask()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L39",
+      "id": "agentic_installers_tools_install_ask",
+      "community": 0,
+      "norm_label": "ask()"
+    },
+    {
+      "label": "require()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L51",
+      "id": "agentic_installers_tools_install_require",
+      "community": 6,
+      "norm_label": "require()"
+    },
+    {
+      "label": "append_if_missing()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L55",
+      "id": "agentic_installers_tools_install_append_if_missing",
+      "community": 0,
+      "norm_label": "append_if_missing()"
+    },
+    {
+      "label": "has_shell_in_tree()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L94",
+      "id": "agentic_installers_tools_install_has_shell_in_tree",
+      "community": 0,
+      "norm_label": "has_shell_in_tree()"
+    },
+    {
+      "label": "CHANGES",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L116",
+      "id": "agentic_installers_tools_install_changes",
+      "community": 0,
+      "norm_label": "changes"
+    },
+    {
+      "label": "SKIPPED",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L117",
+      "id": "agentic_installers_tools_install_skipped",
+      "community": 0,
+      "norm_label": "skipped"
+    },
+    {
+      "label": "changed()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L118",
+      "id": "agentic_installers_tools_install_changed",
+      "community": 0,
+      "norm_label": "changed()"
+    },
+    {
+      "label": "backup_config()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L122",
+      "id": "agentic_installers_tools_install_backup_config",
+      "community": 3,
+      "norm_label": "backup_config()"
+    },
+    {
+      "label": "validate_json()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L136",
+      "id": "agentic_installers_tools_install_validate_json",
+      "community": 6,
+      "norm_label": "validate_json()"
+    },
+    {
+      "label": "merge_opencode_plugin()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L143",
+      "id": "agentic_installers_tools_install_merge_opencode_plugin",
+      "community": 3,
+      "norm_label": "merge_opencode_plugin()"
+    },
+    {
+      "label": "build_auth_json()",
+      "file_type": "code",
+      "source_file": "install.sh",
+      "source_location": "L208",
+      "id": "agentic_installers_tools_install_build_auth_json",
+      "community": 0,
+      "norm_label": "build_auth_json()"
+    },
+    {
+      "label": "backup-restore-ai-configs.sh",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L1",
+      "id": "scripts_backup_restore_ai_configs_sh",
+      "community": 1,
+      "norm_label": "backup-restore-ai-configs.sh"
+    },
+    {
+      "label": "ok()",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L25",
+      "id": "scripts_backup_restore_ai_configs_ok",
+      "community": 1,
+      "norm_label": "ok()"
+    },
+    {
+      "label": "info()",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L26",
+      "id": "scripts_backup_restore_ai_configs_info",
+      "community": 1,
+      "norm_label": "info()"
+    },
+    {
+      "label": "warn()",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L27",
+      "id": "scripts_backup_restore_ai_configs_warn",
+      "community": 1,
+      "norm_label": "warn()"
+    },
+    {
+      "label": "step()",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L28",
+      "id": "scripts_backup_restore_ai_configs_step",
+      "community": 1,
+      "norm_label": "step()"
+    },
+    {
+      "label": "dry()",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L29",
+      "id": "scripts_backup_restore_ai_configs_dry",
+      "community": 1,
+      "norm_label": "dry()"
+    },
+    {
+      "label": "cleanup()",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L43",
+      "id": "scripts_backup_restore_ai_configs_cleanup",
+      "community": 1,
+      "norm_label": "cleanup()"
+    },
+    {
+      "label": "count_items()",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L128",
+      "id": "scripts_backup_restore_ai_configs_count_items",
+      "community": 1,
+      "norm_label": "count_items()"
+    },
+    {
+      "label": "smart_copy()",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L151",
+      "id": "scripts_backup_restore_ai_configs_smart_copy",
+      "community": 1,
+      "norm_label": "smart_copy()"
+    },
+    {
+      "label": "backup_target()",
+      "file_type": "code",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L172",
+      "id": "scripts_backup_restore_ai_configs_backup_target",
+      "community": 1,
+      "norm_label": "backup_target()"
+    },
+    {
+      "label": "run-benchmark.sh",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L1",
+      "id": "scripts_run_benchmark_sh",
+      "community": 2,
+      "norm_label": "run-benchmark.sh"
+    },
+    {
+      "label": "has_shell_in_tree()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L55",
+      "id": "scripts_run_benchmark_has_shell_in_tree",
+      "community": 2,
+      "norm_label": "has_shell_in_tree()"
+    },
+    {
+      "label": "prune_old_backups()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L80",
+      "id": "scripts_run_benchmark_prune_old_backups",
+      "community": 4,
+      "norm_label": "prune_old_backups()"
+    },
+    {
+      "label": "ok()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L97",
+      "id": "scripts_run_benchmark_ok",
+      "community": 2,
+      "norm_label": "ok()"
+    },
+    {
+      "label": "info()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L98",
+      "id": "scripts_run_benchmark_info",
+      "community": 4,
+      "norm_label": "info()"
+    },
+    {
+      "label": "warn()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L99",
+      "id": "scripts_run_benchmark_warn",
+      "community": 5,
+      "norm_label": "warn()"
+    },
+    {
+      "label": "err()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L100",
+      "id": "scripts_run_benchmark_err",
+      "community": 2,
+      "norm_label": "err()"
+    },
+    {
+      "label": "step()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L101",
+      "id": "scripts_run_benchmark_step",
+      "community": 2,
+      "norm_label": "step()"
+    },
+    {
+      "label": "require()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L103",
+      "id": "scripts_run_benchmark_require",
+      "community": 2,
+      "norm_label": "require()"
+    },
+    {
+      "label": "append_if_missing()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L104",
+      "id": "scripts_run_benchmark_append_if_missing",
+      "community": 2,
+      "norm_label": "append_if_missing()"
+    },
+    {
+      "label": "backup_and_disable()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L114",
+      "id": "scripts_run_benchmark_backup_and_disable",
+      "community": 4,
+      "norm_label": "backup_and_disable()"
+    },
+    {
+      "label": "backup_keep()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L124",
+      "id": "scripts_run_benchmark_backup_keep",
+      "community": 4,
+      "norm_label": "backup_keep()"
+    },
+    {
+      "label": "restore_backups()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L134",
+      "id": "scripts_run_benchmark_restore_backups",
+      "community": 5,
+      "norm_label": "restore_backups()"
+    },
+    {
+      "label": "cleanup_trap()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L141",
+      "id": "scripts_run_benchmark_cleanup_trap",
+      "community": 5,
+      "norm_label": "cleanup_trap()"
+    },
+    {
+      "label": "get_last_session_tokens()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L154",
+      "id": "scripts_run_benchmark_get_last_session_tokens",
+      "community": 2,
+      "norm_label": "get_last_session_tokens()"
+    },
+    {
+      "label": "run_task()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L166",
+      "id": "scripts_run_benchmark_run_task",
+      "community": 5,
+      "norm_label": "run_task()"
+    },
+    {
+      "label": "rtk_is_correct()",
+      "file_type": "code",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L342",
+      "id": "scripts_run_benchmark_rtk_is_correct",
+      "community": 2,
+      "norm_label": "rtk_is_correct()"
+    },
+    {
+      "label": "opencode.json",
+      "file_type": "code",
+      "source_file": ".opencode/opencode.json",
+      "source_location": "L1",
+      "id": "opencode_opencode_json",
+      "community": 8,
+      "norm_label": "opencode.json"
+    },
+    {
+      "label": "plugin",
+      "file_type": "code",
+      "source_file": ".opencode/opencode.json",
+      "source_location": "L2",
+      "id": "opencode_opencode_plugin",
+      "community": 8,
+      "norm_label": "plugin"
+    },
+    {
+      "label": "graphify.js",
+      "file_type": "code",
+      "source_file": ".opencode/plugins/graphify.js",
+      "source_location": "L1",
+      "id": "opencode_plugins_graphify_js",
+      "community": 9,
+      "norm_label": "graphify.js"
+    },
+    {
+      "label": "GraphifyPlugin()",
+      "file_type": "code",
+      "source_file": ".opencode/plugins/graphify.js",
+      "source_location": "L6",
+      "id": "plugins_graphify_graphifyplugin",
+      "community": 9,
+      "norm_label": "graphifyplugin()"
+    },
+    {
+      "label": "config.local.json",
+      "file_type": "code",
+      "source_file": ".devin/config.local.json",
+      "source_location": "L1",
+      "id": "devin_config_local_json",
+      "community": 7,
+      "norm_label": "config.local.json"
+    },
+    {
+      "label": "permissions",
+      "file_type": "code",
+      "source_file": ".devin/config.local.json",
+      "source_location": "L2",
+      "id": "devin_config_local_permissions",
+      "community": 7,
+      "norm_label": "permissions"
+    },
+    {
+      "label": "allow",
+      "file_type": "code",
+      "source_file": ".devin/config.local.json",
+      "source_location": "L3",
+      "id": "devin_config_local_permissions_allow",
+      "community": 7,
+      "norm_label": "allow"
+    }
+  ],
+  "links": [
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_ok",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L33",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L34",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_warn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L35",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_err",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L36",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_step",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_dry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_ask",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_require",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_append_if_missing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L94",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_has_shell_in_tree",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L116",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_changes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L119",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_skipped",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L118",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_changed",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L122",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_backup_config",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L136",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_validate_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L143",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_merge_opencode_plugin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L208",
+      "weight": 1.0,
+      "source": "install_sh",
+      "target": "agentic_installers_tools_install_build_auth_json",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L131",
+      "weight": 1.0,
+      "context": "call",
+      "source": "agentic_installers_tools_install_backup_config",
+      "target": "agentic_installers_tools_install_ok",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L157",
+      "weight": 1.0,
+      "context": "call",
+      "source": "agentic_installers_tools_install_merge_opencode_plugin",
+      "target": "agentic_installers_tools_install_ok",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L196",
+      "weight": 1.0,
+      "context": "call",
+      "source": "agentic_installers_tools_install_merge_opencode_plugin",
+      "target": "agentic_installers_tools_install_warn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L52",
+      "weight": 1.0,
+      "context": "call",
+      "source": "agentic_installers_tools_install_require",
+      "target": "agentic_installers_tools_install_err",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L139",
+      "weight": 1.0,
+      "context": "call",
+      "source": "agentic_installers_tools_install_validate_json",
+      "target": "agentic_installers_tools_install_err",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L127",
+      "weight": 1.0,
+      "context": "call",
+      "source": "agentic_installers_tools_install_backup_config",
+      "target": "agentic_installers_tools_install_dry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "install.sh",
+      "source_location": "L149",
+      "weight": 1.0,
+      "context": "call",
+      "source": "agentic_installers_tools_install_merge_opencode_plugin",
+      "target": "agentic_installers_tools_install_dry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "scripts_backup_restore_ai_configs_sh",
+      "target": "scripts_backup_restore_ai_configs_ok",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L26",
+      "weight": 1.0,
+      "source": "scripts_backup_restore_ai_configs_sh",
+      "target": "scripts_backup_restore_ai_configs_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L27",
+      "weight": 1.0,
+      "source": "scripts_backup_restore_ai_configs_sh",
+      "target": "scripts_backup_restore_ai_configs_warn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L28",
+      "weight": 1.0,
+      "source": "scripts_backup_restore_ai_configs_sh",
+      "target": "scripts_backup_restore_ai_configs_step",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L29",
+      "weight": 1.0,
+      "source": "scripts_backup_restore_ai_configs_sh",
+      "target": "scripts_backup_restore_ai_configs_dry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L43",
+      "weight": 1.0,
+      "source": "scripts_backup_restore_ai_configs_sh",
+      "target": "scripts_backup_restore_ai_configs_cleanup",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L128",
+      "weight": 1.0,
+      "source": "scripts_backup_restore_ai_configs_sh",
+      "target": "scripts_backup_restore_ai_configs_count_items",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L151",
+      "weight": 1.0,
+      "source": "scripts_backup_restore_ai_configs_sh",
+      "target": "scripts_backup_restore_ai_configs_smart_copy",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L172",
+      "weight": 1.0,
+      "source": "scripts_backup_restore_ai_configs_sh",
+      "target": "scripts_backup_restore_ai_configs_backup_target",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L184",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_backup_restore_ai_configs_backup_target",
+      "target": "scripts_backup_restore_ai_configs_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L156",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_backup_restore_ai_configs_smart_copy",
+      "target": "scripts_backup_restore_ai_configs_dry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/backup-restore-ai-configs.sh",
+      "source_location": "L176",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_backup_restore_ai_configs_backup_target",
+      "target": "scripts_backup_restore_ai_configs_dry",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L55",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_has_shell_in_tree",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_prune_old_backups",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L97",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_ok",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L98",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L99",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_warn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L100",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_err",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_step",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L103",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_require",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L104",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_append_if_missing",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L114",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_backup_and_disable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_backup_keep",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L134",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_restore_backups",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L141",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_cleanup_trap",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L154",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_get_last_session_tokens",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L166",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_run_task",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L342",
+      "weight": 1.0,
+      "source": "scripts_run_benchmark_sh",
+      "target": "scripts_run_benchmark_rtk_is_correct",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L89",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_run_benchmark_prune_old_backups",
+      "target": "scripts_run_benchmark_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L120",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_run_benchmark_backup_and_disable",
+      "target": "scripts_run_benchmark_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L130",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_run_benchmark_backup_keep",
+      "target": "scripts_run_benchmark_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L137",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_run_benchmark_restore_backups",
+      "target": "scripts_run_benchmark_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L169",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_run_benchmark_run_task",
+      "target": "scripts_run_benchmark_info",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L143",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_run_benchmark_cleanup_trap",
+      "target": "scripts_run_benchmark_warn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L178",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_run_benchmark_run_task",
+      "target": "scripts_run_benchmark_warn",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L103",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_run_benchmark_require",
+      "target": "scripts_run_benchmark_err",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "source_file": "scripts/run-benchmark.sh",
+      "source_location": "L144",
+      "weight": 1.0,
+      "context": "call",
+      "source": "scripts_run_benchmark_cleanup_trap",
+      "target": "scripts_run_benchmark_restore_backups",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".opencode/opencode.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "opencode_opencode_json",
+      "target": "opencode_opencode_plugin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".opencode/plugins/graphify.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "source": "opencode_plugins_graphify_js",
+      "target": "plugins_graphify_graphifyplugin",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".devin/config.local.json",
+      "source_location": "L2",
+      "weight": 1.0,
+      "source": "devin_config_local_json",
+      "target": "devin_config_local_permissions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": ".devin/config.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "devin_config_local_permissions",
+      "target": "devin_config_local_permissions_allow",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "2908521554c1947e153818c708d16ecbb5f171fc"
+}
