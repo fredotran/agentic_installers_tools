@@ -35,3 +35,12 @@
 - Added context-mode, token-savior, memsearch packages with --stack-a/--stack-b flags (Stack B is default)
 - memsearch only installs on Stack B; token-savior + context-mode in both
 - Follow-ups: none
+
+## 2026-05-21 00:40 — Add stack-lock.json and maintain-stack.sh
+
+- Created `stack-lock.json` to track known-good versions of all Python/npm/git/cargo dependencies.
+- fastmcp pinned to `==3.2.4` because `3.3.0+` breaks `code-review-graph` and `token-savior` MCP prompt rendering (dict vs Message objects).
+- Created `scripts/maintain-stack.sh` with modes: check, --update, --update-all, --verify, --lock.
+- Installer now reads constraints from lockfile and pins fastmcp before installing other Python packages.
+- Pinned fastmcp on local system; opencode should work again.
+- code-review-graph and token-savior remain disabled as MCP servers (their prompt implementations are fundamentally broken — use them as CLI tools instead).
