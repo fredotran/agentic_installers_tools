@@ -23,3 +23,10 @@
 - Added normalization loop to `setup-token-optimizer.sh` that converts existing `command`+`args` into `command` array and strips non-schema `description`.
 - Prevents re-running the script from preserving invalid legacy fields.
 - none
+
+## 2026-05-20 02:06 — Add opencode-lcm plugin (merged to main)
+
+- Added `opencode-lcm` install step and plugin config with DCP interop to `setup-token-optimizer.sh`.
+- Updated `run-benchmark.sh` and `scripts/README.md`.
+- Rebuilt branch from current main to avoid reverting graphify fixes from stale `feat/opencode-lcm`.
+- none
