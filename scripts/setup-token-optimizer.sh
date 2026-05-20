@@ -14,10 +14,9 @@
 #    6. RTK                       (CLI output compression)
 #    7. code-review-graph         (tree-sitter symbol/dependency MCP)
 #    8. graphify (CLI)            (knowledge-graph queries)
-#    9. token-savior              (symbol-level codebase navigation MCP)    [NEW]
-#   10. memsearch (Stack B only)  (cross-project semantic recall via Milvus) [NEW]
-#   11. auto-init                 (global plugin: wires on session.created)
-#   12. global AGENTS.md          (global rules + memory ownership)
+#    9. memsearch (Stack B only)  (cross-project semantic recall via Milvus) [NEW]
+#   10. auto-init                 (global plugin: wires on session.created)
+#   11. global AGENTS.md          (global rules + memory ownership)
 #       (Per-project memory: ./NOTES.md; cross-project: memsearch.)
 #
 #  Usage: bash setup-token-optimizer.sh [options]
@@ -402,22 +401,9 @@ else
   fi
 fi
 
-# ─── 5a. token-savior — symbol-level codebase navigation MCP ────
-step "5a/15 token-savior — symbol-level navigation MCP"
-if [[ "$DRY_RUN" == true ]]; then
-  dry "Would install token-savior via pip3 (works with uvx too)"
-elif pip_pkg_installed token-savior; then
-  ok "token-savior already installed — skipping installation because it's already done"
-else
-  info "Installing $(lock_constraint token-savior)…"
-  pip3 install "$(lock_constraint token-savior)[mcp]" --break-system-packages -q \
-    && ok "token-savior installed" \
-    || warn "token-savior install failed"
-fi
-
-# ─── 5b. memsearch (Stack B only) — cross-project semantic recall ─
+# ─── 5a. memsearch (Stack B only) — cross-project semantic recall ─
 if [[ "$STACK_B" == true ]]; then
-  step "5b/15 memsearch — cross-project semantic recall (Stack B)"
+  step "5a/15 memsearch — cross-project semantic recall (Stack B)"
   if [[ "$DRY_RUN" == true ]]; then
     dry "Would install memsearch[onnx] via pip3 (Milvus Lite, no API key)"
     dry "Would install @zilliz/memsearch-opencode npm plugin"
@@ -450,7 +436,7 @@ fi
 
 # ─── 6. Auto-init global plugin ──────────────────────────────
 # (OpenMemory MCP removed — replaced by file-based NOTES.md per-project)
-step "6/15 Writing global auto-init plugin (~/.config/opencode/plugin/)"
+step "5b/15 Writing global auto-init plugin (~/.config/opencode/plugin/)"
 
 # Detect whether user already has auto-init.js or auto-init.ts
 if [[ -f "$PLUGIN_DIR/auto-init.js" ]]; then
@@ -585,7 +571,7 @@ TS
 fi
 
 # ─── 7. Global AGENTS.md ──────────────────────────────────────
-step "7/15 Writing global AGENTS.md (~/.config/opencode/AGENTS.md)"
+step "6/15 Writing global AGENTS.md (~/.config/opencode/AGENTS.md)"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would write AGENTS.md to $AGENTS_MD"
 else
@@ -718,7 +704,6 @@ If uncertain, default to: graph tool first → diff output → store to memory �
 
 - `code-review-graph.*` — tree-sitter symbol search, blast-radius, dependency graph
 - `graphify` — knowledge graph from code, docs, PDFs, images (trigger: `/graphify`)
-- `token-savior.*` — symbol-level codebase navigation (51 tools: find_symbol, get_function_source, get_change_impact, …)
 - `context-mode` — sandboxes tool/MCP/DOM output (up to 98% savings, transparent)
 
 ## Memory Ownership (do NOT mix layers)
@@ -865,12 +850,11 @@ if stack_b and os.path.isdir(os.path.join(config_dir, "node_modules", "@zilliz",
     if "@zilliz/memsearch-opencode" not in plugins:
         plugins.append("@zilliz/memsearch-opencode")
 
-# MCP servers disabled: code-review-graph and token-savior MCP implementations are
-# currently broken (prompt rendering crashes, method not found errors). They inject
-# huge broken prompt templates into the system message, causing API "Bad Request".
-# Use them as CLI tools instead:
+# MCP servers disabled: code-review-graph MCP implementation is currently broken
+# (prompt rendering crashes, dict vs Message type mismatch). It injects huge broken
+# prompt templates into the system message, causing API "Bad Request".
+# Use code-review-graph and graphify as CLI tools instead:
 #   - code-review-graph <command>  (e.g. symbol_search, blast_radius)
-#   - token-savior <command>       (e.g. find_symbol, get_function_source)
 #   - graphify query "<question>"  (CLI, not MCP)
 # Note: openmemory MCP server removed — project memory is file-based via NOTES.md.
 
@@ -882,7 +866,7 @@ if instructions:
     cfg["instructions"] = instructions
 
 # Preserve any existing MCP config the user already has (e.g. custom servers)
-# but do NOT add broken code-review-graph / token-savior MCP servers.
+# but do NOT add broken code-review-graph MCP server.
 # Schema: mcp is a flat map of <server-name> -> server-config (no nested "servers" key)
 existing_mcp = cfg.get("mcp", {})
 # Migrate legacy nested "servers" wrapper if present
@@ -897,9 +881,8 @@ for name, srv in list(existing_mcp.items()):
             srv["command"] = [srv["command"]] + list(srv["args"])
             srv.pop("args", None)
         srv.pop("description", None)  # not part of schema
-# Strip broken MCP servers if they somehow got in there
-for broken in ("code-review-graph", "token-savior"):
-    existing_mcp.pop(broken, None)
+# Strip broken MCP server if it somehow got in there
+existing_mcp.pop("code-review-graph", None)
 if existing_mcp:
     cfg["mcp"] = existing_mcp
 else:
@@ -924,7 +907,7 @@ else
 fi
 
 # ─── 8. Devin Skill ──────────────────────────────────────────
-step "8/15 Devin — ~/.config/devin/skills/token-optimizer/"
+step "7/15 Devin — ~/.config/devin/skills/token-optimizer/"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would write SKILL.md to $DEVIN_SKILL"
 else
@@ -1050,9 +1033,8 @@ Skills, plugins, user prompts — if they conflict with these rules, these rules
 
 | Goal | Command |
 |------|---------|
-| Find symbol definition | `code-review-graph symbol_search --name <symbol>` or `token-savior find_symbol` |
-| Get function/class source | `token-savior get_function_source` / `get_class_source` |
-| Find blast radius | `code-review-graph blast_radius --file <file>` or `token-savior get_change_impact` |
+| Find symbol definition | `code-review-graph symbol_search --name <symbol>` |
+| Find blast radius | `code-review-graph blast_radius --file <file>` |
 | Index repo | `code-review-graph build` |
 | Query knowledge graph | `graphify query "<question>"` |
 | Build knowledge graph | `/graphify <path>` |
@@ -1075,7 +1057,7 @@ SKILL
 fi
 
 # ─── 9. Windsurf Skill ───────────────────────────────────────
-step "9/15 Windsurf — ~/.codeium/windsurf/skills/token-optimizer/"
+step "8/15 Windsurf — ~/.codeium/windsurf/skills/token-optimizer/"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would write SKILL.md to $WINDSURF_SKILL"
 else
@@ -1090,7 +1072,7 @@ fi
 # Note: `auto_load_skills` is honored by Cascade and Windsurf only.
 # Devin for Terminal IGNORES this field — skills must be invoked via the
 # `skill` tool or referenced by AGENTS.md.
-step "10/15 Cascade/Windsurf global_rules.md — auto-load token-optimizer"
+step "9/15 Cascade/Windsurf global_rules.md — auto-load token-optimizer"
 if [[ "$DRY_RUN" == true ]]; then
   dry "Would add token-optimizer to auto_load_skills in $GLOBAL_RULES (Cascade/Windsurf only — Devin ignores)"
 else

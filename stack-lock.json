@@ -17,13 +17,6 @@
       "mcp": false,
       "note": "Knowledge graph CLI (not MCP). PyPI name is graphifyy"
     },
-    "token-savior": {
-      "version": "1.0.0",
-      "installer": "pip3",
-      "constraint": ">=1.0.0",
-      "mcp": true,
-      "note": "Symbol-level codebase navigation MCP"
-    },
     "memsearch": {
       "version": "0.4.3",
       "installer": "pip3",
@@ -35,7 +28,7 @@
       "version": "3.2.4",
       "installer": "pip3",
       "constraint": "==3.2.4",
-      "pinReason": "3.3.0+ breaks code-review-graph and token-savior prompt rendering (dict vs Message). DO NOT UPGRADE until upstream fixes.",
+      "pinReason": "3.3.0+ breaks code-review-graph prompt rendering (dict vs Message). DO NOT UPGRADE until upstream fixes.",
       "mcp": false,
       "note": "Transitive dep \u2014 pinned for stability"
     },

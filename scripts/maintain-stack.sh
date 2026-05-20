@@ -435,15 +435,6 @@ verify_mcp() {
     fi
   fi
 
-  if command -v token-savior &>/dev/null; then
-    local out
-    out=$(timeout 5 token-savior mcp 2>&1 || true)
-    if echo "$out" | grep -q "Server\|Starting"; then
-      ok "token-savior MCP starts successfully"
-    else
-      warn "token-savior MCP had issues on startup"
-    fi
-  fi
 }
 
 # ─── Lock Refresh ────────────────────────────────────────────

@@ -47,7 +47,6 @@ bash Agentic_Coding_Tools/scripts/setup-token-optimizer.sh --dry-run
 | DCP, LCM, Skillful, Conductor, RTK | ✓ | ✓ |
 | context-mode (tool/MCP output sandbox) | ✓ | ✓ |
 | code-review-graph + graphify | ✓ | ✓ |
-| token-savior (symbol nav MCP) | ✓ | ✓ |
 | **memsearch (cross-project semantic recall)** | ✗ | **✓** |
 | Infrastructure | None | Milvus Lite (local) |
 | Best for | 1–2 repos, short sessions | Many repos, long projects |

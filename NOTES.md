@@ -32,15 +32,23 @@
 - none
 
 ## 2026-05-19 23:55 — Stack A/B support
-- Added context-mode, token-savior, memsearch packages with --stack-a/--stack-b flags (Stack B is default)
-- memsearch only installs on Stack B; token-savior + context-mode in both
-- Follow-ups: none
+- Added context-mode, memsearch packages with --stack-a/--stack-b flags (Stack B is default)
+- memsearch only installs on Stack B; context-mode in both
+- Follow-ups: token-savior removed 2026-05-21 (broken MCP implementation)
 
 ## 2026-05-21 00:40 — Add stack-lock.json and maintain-stack.sh
 
 - Created `stack-lock.json` to track known-good versions of all Python/npm/git/cargo dependencies.
-- fastmcp pinned to `==3.2.4` because `3.3.0+` breaks `code-review-graph` and `token-savior` MCP prompt rendering (dict vs Message objects).
+- fastmcp pinned to `==3.2.4` because `3.3.0+` breaks `code-review-graph` MCP prompt rendering (dict vs Message objects).
 - Created `scripts/maintain-stack.sh` with modes: check, --update, --update-all, --verify, --lock.
 - Installer now reads constraints from lockfile and pins fastmcp before installing other Python packages.
 - Pinned fastmcp on local system; opencode should work again.
-- code-review-graph and token-savior remain disabled as MCP servers (their prompt implementations are fundamentally broken — use them as CLI tools instead).
+- code-review-graph remains disabled as MCP server (prompt implementation fundamentally broken — use as CLI tool instead).
+
+## 2026-05-21 00:45 — Remove token-savior from stack
+
+- Removed `token-savior` package from installer, lockfile, maintenance script, README, and AGENTS.md template.
+- Reason: MCP implementation broken (method not found errors, never fully compatible with opencode's MCP client).
+- fastmcp pinReason updated to remove token-savior mention.
+- Step numbers renumbered in setup-token-optimizer.sh after removal.
+- none
