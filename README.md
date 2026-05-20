@@ -319,7 +319,8 @@ After running the setup script, your OpenCode configuration lives in:
 ### MCP Servers Configured
 
 - **`code-review-graph`** — `code-review-graph mcp` (stdio)
-- **`graphify`** — `graphify --mcp` (stdio)
+
+`graphify` is a standalone CLI tool (not an MCP server). Use `graphify query` directly.
 
 ### Project Memory
 

@@ -624,14 +624,7 @@ if shutil.which("code-review-graph"):
         "command": ["code-review-graph", "mcp"]
     }
 
-# graphify: knowledge graph (works on Python 3.10+)
-if shutil.which("graphify"):
-    mcp_servers["graphify"] = {
-        "type": "local",
-        "enabled": True,
-        "command": ["graphify", "--mcp"]
-    }
-
+# Note: graphify is a CLI tool, not an MCP server (no --mcp flag). Use it via `graphify query`.
 # Note: openmemory MCP server removed — project memory is now file-based via NOTES.md.
 
 cfg = existing_cfg.copy()

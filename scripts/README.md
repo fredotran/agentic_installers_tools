@@ -19,15 +19,13 @@ This document summarizes every customization applied to OpenCode compared to a f
 
 ---
 
-## 2. MCP Servers (3 configured)
+## 2. MCP Servers (1 configured)
 
 | Server | Type | Command | Status |
 |--------|------|---------|--------|
 | `code-review-graph` | local | `code-review-graph mcp` | enabled |
-| `graphify` | local | `graphify --mcp` | enabled |
-| `openmemory` | local | `python3 -m openmemory.mcp.server` | **disabled** |
 
-`graphify` MCP is now enabled alongside `code-review-graph` — both graph tools are wired in generated configs.
+`graphify` is a standalone CLI tool (not an MCP server). Use `graphify query` directly.
 
 **File:** `~/.config/opencode/opencode.jsonc`
 

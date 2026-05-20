@@ -463,11 +463,6 @@ else
       "type": "local",
       "enabled": true,
       "command": ["code-review-graph", "mcp"]
-    },
-    "graphify": {
-      "type": "local",
-      "enabled": true,
-      "command": ["graphify", "--mcp"]
     }
   }
 }
